@@ -1,0 +1,20 @@
+version: "3.9"
+services:
+  db:
+    image: postgres
+    restart: on-failure
+    container_name: postgres_production_weeklyMail
+    environment:
+        POSTGRES_USER: MeAndOnlyMe
+        POSTGRES_PASSWORD: MyAwesomePasswordIsHardToRemember
+        POSTGRES_DB: subjects
+        POSTGRES_HOST_AUTH_METHOD: password
+    ports: 
+        - 5432:5432
+
+  adminer:
+    container_name: adminer_production_weeklyMail
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
