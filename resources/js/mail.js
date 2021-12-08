@@ -1,6 +1,6 @@
 const sgMail=require('@sendgrid/mail');
 const {client} = require('./postgres')
-const {reminder} = require('./reminder')
+const {reminder, mail_list} = require('./reminder')
 const {sortHtmlTags} = require('./mailsorter')
 require('./week')
 
@@ -10,7 +10,7 @@ let week = date.getWeek()
 class Mail {
   constructor(){
     this.to = 'Niklas.Oscarsson@ga.ntig.se';
-    this.reminder = ['asa.granberg@ntig.se', 'Niklas.Oscarsson@ga.ntig.se']
+    this.reminder = mail_list
     this.from = 'Niklas.Oscarsson@ntig.se';
     this.subject = 'Veckoraport';
     this.text = 'Något här också';
@@ -44,7 +44,7 @@ class Mail {
       text:this.text,
       html: reminder
     })
-    .then(()=>{console.log(`email sent to ${this.from}`);})
+    .then(()=>{console.log(`email sent to ${this.reminder}`);})
     .catch((err)=>{console.log(err);})
   }
   async sendConfimationMailTest(){  //REMOVE WHEN DONE

@@ -4,15 +4,18 @@ const {client, setup} = require('./resources/js/postgres')
 require('./resources/js/week')
 require('dotenv').config();
 const cors = require('cors')
+const cron = require('node-cron')
 const app = exp();
 const mail = new Mail()
 
-/* 
-setInterval(async ()=>{
-  await mail.updateMailTemplate() //text then HTML
-  mail.sendMail()
-}, 1000*60*60*24*7)
-*/
+cron.schedule('0 8 * * 1' , ()=>{
+  mail.sendReminderMail()
+  console.log('reminded people');
+})
+cron.schedule('0 17 * * 3' , ()=>{
+  mail.sendReminderMail()
+  console.log('reminded people');
+})
 
 app.use(cors())
 app.use(exp.urlencoded({extended:true}));
@@ -25,6 +28,7 @@ app.get('/', (req,res)=>{
 
 app.get('/reminder', (req,res)=>{
   mail.sendReminderMail()
+  res.send("reminded people")
 })
 app.get('/confirm/test', async (req,res)=>{ // REMOVE WHEN DONE
   await mail.updateMailTemplate()
