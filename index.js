@@ -55,7 +55,7 @@ app.post('/setSubject',async (req,res)=>{
   })
 })
 
-app.listen(3000, (error)=>{
+app.listen(80, (error)=>{
   if(error){
     console.log(error);
   }else{
