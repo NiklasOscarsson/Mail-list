@@ -25,7 +25,7 @@ app.use(exp.json())
 
 app.get('/', (req,res)=>{
   console.log(req.body);
-  res.sendFile('./views/index.html')
+  res.sendFile('index.html', {root:'./views/'})
 })
 
 app.get('/confirm/test', async (req,res)=>{
