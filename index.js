@@ -23,7 +23,10 @@ app.get('/', (req,res)=>{
   res.sendFile('index.html', {root:'./views/'})
 })
 
-app.get('/confirm/test', async (req,res)=>{
+app.get('/reminder', (req,res)=>{
+  mail.sendReminderMail()
+})
+app.get('/confirm/test', async (req,res)=>{ // REMOVE WHEN DONE
   await mail.updateMailTemplate()
   mail.sendConfimationMailTest()
   res.send('mail sent to '+ mail.to)

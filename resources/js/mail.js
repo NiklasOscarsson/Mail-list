@@ -10,11 +10,12 @@ let week = date.getWeek()
 class Mail {
   constructor(){
     this.to = 'Niklas.Oscarsson@ga.ntig.se';
+    this.reminder = ['asa.granberg@ntig.se', 'Niklas.Oscarsson@ga.ntig.se']
     this.from = 'Niklas.Oscarsson@ntig.se';
     this.subject = 'Veckoraport';
     this.text = 'Något här också';
     this.html = '';
-    this.confirmation = 'http://10.130.248.43:3000/confirm'
+    this.confirmation = 'http://nti-karlstad.duckdns.org/confirm'
     this.confirmationAdress = 'asa.granberg@ntig.se'
     this.testAdress = 'Niklas.Oscarsson@ga.ntig.se'
     
@@ -37,16 +38,16 @@ class Mail {
   }
   async sendReminderMail(){
     sgMail.send({
-      to:this.to,
+      to:this.reminder,
       from:this.from,
       subject:this.subject,
       text:this.text,
-      html:reminder
+      html: reminder
     })
     .then(()=>{console.log(`email sent to ${this.from}`);})
     .catch((err)=>{console.log(err);})
   }
-  async sendConfimationMailTest(){
+  async sendConfimationMailTest(){  //REMOVE WHEN DONE
     sgMail.send({
       to:this.testAdress,
       from:this.from,
@@ -65,7 +66,7 @@ class Mail {
       text:this.text,
       html:`<h2>Om allt ser bra ut klicka <a href="${this.confirmation}">här</a></h2>\n ${this.html}`
     })
-    .then(()=>{console.log(`email sent to ${this.testAdress}`);})
+    .then(()=>{console.log(`email sent to ${this.confirmationAdress}`);})
     .catch((err)=>{console.log(err);})
   }
 
