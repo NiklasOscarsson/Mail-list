@@ -48,13 +48,13 @@ class Mail {
   }
   async sendConfimationMailTest(){
     sgMail.send({
-      to:this.confirmationAdress,
+      to:this.testAdress,
       from:this.from,
       subject:this.subject,
       text:this.text,
       html:`<h2>Om allt ser bra ut klicka <a href="${this.confirmation}">här</a></h2>\n ${this.html}`
     })
-    .then(()=>{console.log(`email sent to ${this.confirmationAdress}`);})
+    .then(()=>{console.log(`email sent to ${this.testAdress}`);})
     .catch((err)=>{console.log(err);})
   }
   async sendConfimationMail(){
@@ -93,7 +93,6 @@ class Mail {
   setSnippet(e){
     let snippet = ''
     let arr = []
-    console.log(e);
     //Setting subjects and info into HTML
     for(let i = 0; i < e.length; i++){
       if(!arr.includes(e[i].subject)){
