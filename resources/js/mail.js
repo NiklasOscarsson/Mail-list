@@ -93,6 +93,7 @@ class Mail {
   setSnippet(e){
     let snippet = ''
     let arr = []
+    console.log(e);
     //Setting subjects and info into HTML
     for(let i = 0; i < e.length; i++){
       if(!arr.includes(e[i].subject)){
