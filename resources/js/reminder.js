@@ -9,7 +9,7 @@ const reminder = `
   <h1>Hej allesammans</h1>
   <br>
   <p>En vänlig påminnelse om att skriva in hur det går för Lucas H i ES20</p>
-  <p>för att enkelt skicka in detta kan ni följa <a href="http://10.130.248.43:8081/"><b>denna länk</b></a></p>
+  <p>för att enkelt skicka in detta kan ni följa <a href="http://nti-karlstad.duckdns.org/"><b>denna länk</b></a></p>
   <br>
   <hr>
   <p>Mvh</p>

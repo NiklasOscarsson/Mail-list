@@ -3,7 +3,7 @@ services:
   db:
     image: postgres
     restart: on-failure
-    container_name: postgres_production_weeklyMail
+    container_name: postgres_production_Mail
     environment:
         POSTGRES_USER: MeAndOnlyMe
         POSTGRES_PASSWORD: MyAwesomePasswordIsHardToRemember
@@ -13,7 +13,7 @@ services:
         - 5432:5432
 
   adminer:
-    container_name: adminer_production_weeklyMail
+    container_name: adminer_production_Mail
     image: adminer
     restart: always
     ports:

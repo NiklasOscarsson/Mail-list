@@ -1,9 +1,8 @@
 const exp = require('express');
 const Mail = require('./resources/js/mail');
-const client = require('./resources/js/postgres')
+const {client, setup} = require('./resources/js/postgres')
 require('./resources/js/week')
 require('dotenv').config();
-const cors = require('cors')
 const app = exp();
 const mail = new Mail()
 
@@ -20,20 +19,32 @@ setInterval(async ()=>{
 
 */
 
-app.use(cors())
 app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
 app.get('/', (req,res)=>{
-  res.sendFile('index.html', {root:'./views'})
+  console.log(req.body);
+  res.sendFile('./views/index.html')
 })
 
-app.get('/confirm', async (req,res)=>{
+app.get('/confirm/test', async (req,res)=>{
   await mail.updateMailTemplate()
-  mail.sendMail()
+  mail.sendConfimationMailTest()
   res.send('mail sent to '+ mail.to)
 })
+
+app.get('/confirm/real', async (req,res)=>{
+  await mail.updateMailTemplate()
+  mail.sendConfimationMail()
+
+  res.send('mail sent to '+ mail.to)
+})
+
+app.get('/admin/setup/db', (req,res)=>{
+  setup(res)
+})
+
 
 app.post('/setSubject',async (req,res)=>{
   let date = new Date

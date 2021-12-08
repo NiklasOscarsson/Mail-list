@@ -1,6 +1,7 @@
 const sgMail=require('@sendgrid/mail');
-const client = require('./postgres')
+const {client} = require('./postgres')
 const {reminder} = require('./reminder')
+const {sortHtmlTags} = require('./mailsorter')
 require('./week')
 
 date=new Date
@@ -14,7 +15,8 @@ class Mail {
     this.text = 'Något här också';
     this.html = '';
     this.confirmation = 'http://10.130.248.43:3000/confirm'
-    this.confirmationAdress = 'Niklas.Oscarsson@ga.ntig.se'
+    this.confirmationAdress = 'asa.granberg@ntig.se'
+    this.testAdress = 'Niklas.Oscarsson@ga.ntig.se'
     
     sgMail.setApiKey(process.env.SGMAILKEY);
     client.connect()
@@ -44,6 +46,17 @@ class Mail {
     .then(()=>{console.log(`email sent to ${this.from}`);})
     .catch((err)=>{console.log(err);})
   }
+  async sendConfimationMailTest(){
+    sgMail.send({
+      to:this.confirmationAdress,
+      from:this.from,
+      subject:this.subject,
+      text:this.text,
+      html:`<h2>Om allt ser bra ut klicka <a href="${this.confirmation}">här</a></h2>\n ${this.html}`
+    })
+    .then(()=>{console.log(`email sent to ${this.confirmationAdress}`);})
+    .catch((err)=>{console.log(err);})
+  }
   async sendConfimationMail(){
     sgMail.send({
       to:this.confirmationAdress,
@@ -52,9 +65,10 @@ class Mail {
       text:this.text,
       html:`<h2>Om allt ser bra ut klicka <a href="${this.confirmation}">här</a></h2>\n ${this.html}`
     })
-    .then(()=>{console.log(`email sent to ${this.from}`);})
+    .then(()=>{console.log(`email sent to ${this.testAdress}`);})
     .catch((err)=>{console.log(err);})
   }
+
   async sendMail(){
     sgMail.send({
       to:this.to,
@@ -63,30 +77,11 @@ class Mail {
       text:this.text,
       html:this.html
     })
-    .then(()=>{console.log(`email sent to ${this.from}`);})
+    .then(()=>{console.log(`email sent to ${this.to}`);})
     .catch((err)=>{console.log(err);})
   }
   sortHtml(result){
-    let design = result.filter(e=> e.subject.trim() === "Design")
-    let Digitalt_skapande = result.filter(e=> e.subject.trim() === "Digitalt skapande")
-    let Engelska = result.filter(e=> e.subject.trim() === "Engelska")
-    let Gränssnittsdesign = result.filter(e=> e.subject.trim() === "Gränssnittsdesign")
-    let Historia = result.filter(e=> e.subject.trim() === "Historia")
-    let Idrott = result.filter(e=> e.subject.trim() === "Idrott")
-    let Religion = result.filter(e=> e.subject.trim() === "Religion")
-    let Svenska = result.filter(e=> e.subject.trim() === "Svenska")
-    let Webbutveckling = result.filter(e=> e.subject.trim() === "Webbutveckling")
-    let newResult = []
-    design.forEach(e => {newResult.push(e)});
-    Digitalt_skapande.forEach(e => {newResult.push(e)});
-    Engelska.forEach(e => {newResult.push(e)});
-    Gränssnittsdesign.forEach(e => {newResult.push(e)});
-    Historia.forEach(e => {newResult.push(e)});
-    Idrott.forEach(e => {newResult.push(e)});
-    Religion.forEach(e => {newResult.push(e)});
-    Svenska.forEach(e => {newResult.push(e)});
-    Webbutveckling.forEach(e => {newResult.push(e)});
-    return newResult
+    sortHtmlTags(result)
   }
 
   async updateMailTemplate(){
