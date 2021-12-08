@@ -81,7 +81,7 @@ class Mail {
     .catch((err)=>{console.log(err);})
   }
   sortHtml(result){
-    sortHtmlTags(result)
+    return sortHtmlTags(result)
   }
 
   async updateMailTemplate(){
