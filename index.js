@@ -14,7 +14,7 @@ setInterval(async ()=>{
 }, 1000*60*60*24*7)
 */
 
-app.use(cors)
+app.use(cors())
 app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
