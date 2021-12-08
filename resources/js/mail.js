@@ -15,7 +15,7 @@ class Mail {
     this.subject = 'Veckoraport';
     this.text = 'Något här också';
     this.html = '';
-    this.confirmation = 'http://nti-karlstad.duckdns.org/confirm'
+    this.confirmation = 'http://nti-karlstad.duckdns.org/confirm/0'
     this.confirmationAdress = 'asa.granberg@ntig.se'
     this.testAdress = 'Niklas.Oscarsson@ga.ntig.se'
     
