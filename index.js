@@ -3,28 +3,23 @@ const Mail = require('./resources/js/mail');
 const {client, setup} = require('./resources/js/postgres')
 require('./resources/js/week')
 require('dotenv').config();
+const cors = require('cors')
 const app = exp();
 const mail = new Mail()
 
 /* 
-
-async function mailer(){
-  await mail.updateMailTemplate()
-  mail.sendMail()
-}  
 setInterval(async ()=>{
   await mail.updateMailTemplate() //text then HTML
   mail.sendMail()
 }, 1000*60*60*24*7)
-
 */
 
+app.use(cors)
 app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
 app.get('/', (req,res)=>{
-  console.log(req.body);
   res.sendFile('index.html', {root:'./views/'})
 })
 
