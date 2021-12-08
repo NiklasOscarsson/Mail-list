@@ -42,10 +42,8 @@ app.get('/admin/setup/db', (req,res)=>{
 
 
 app.post('/setSubject',async (req,res)=>{
-  console.log('this far1');
   let date = new Date
   let thisWeek = date.getWeek()
-  console.log('this far2');
   await client.query(`
         INSERT INTO reports (week, subject, report, teacher)
         VALUES ($1, $2, $3, $4);`, 
