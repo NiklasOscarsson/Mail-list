@@ -6,15 +6,17 @@ require('dotenv').config();
 const cors = require('cors')
 const cron = require('node-cron')
 const app = exp();
-const mail = new Mail()
+const mailer = []
+mailer.push(new Mail())
 
 cron.schedule('0 8 * * 1' , ()=>{
-  mail.sendReminderMail()
+  mailer[0].sendReminderMail()
   console.log('reminded people');
 })
-cron.schedule('0 17 * * 3' , ()=>{
-  mail.sendReminderMail()
-  console.log('reminded people');
+cron.schedule('0 17 * * 3' , async ()=>{
+  await mailer[0].updateMailTemplate()
+  mailer[0].sendConfimationMail()
+  res.send('mail sent to '+ mailer[0].confirmationAdress)
 })
 
 app.use(cors())
@@ -27,20 +29,19 @@ app.get('/', (req,res)=>{
 })
 
 app.get('/reminder', (req,res)=>{
-  mail.sendReminderMail()
+  mailer[0].sendReminderMail()
   res.send("reminded people")
 })
-app.get('/confirm/test', async (req,res)=>{ // REMOVE WHEN DONE
-  await mail.updateMailTemplate()
-  mail.sendConfimationMailTest()
-  res.send('mail sent to '+ mail.to)
+app.get('/confirmation', async (req,res)=>{
+  await mailer[0].updateMailTemplate()
+  mailer[0].sendConfimationMailTest()
+  res.send('mail sent to '+ mailer[0].to)
 })
 
-app.get('/confirm/real', async (req,res)=>{
-  await mail.updateMailTemplate()
-  mail.sendConfimationMail()
-
-  res.send('mail sent to '+ mail.to)
+app.get('/confirmed/:person', async (req,res)=>{
+  await mailer[0].updateMailTemplate()
+  mailer[0].sendConfimationMail()
+  res.send('mail sent to '+ mailer[0][req.params.person])
 })
 
 app.get('/admin/setup/db', (req,res)=>{
