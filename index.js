@@ -24,9 +24,9 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-function auth(req,res,next){
-
-    next()
+function auth(req, res, next){
+  console.log(next);
+  return next()
 }
 
 
@@ -48,10 +48,10 @@ app.get('/confirmed/:person', async (req,res)=>{
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0][req.params.person])
 })
-app.get('/admin/setup/db', auth(), (req,res)=>{
+app.get('/admin/setup/db', auth, (req,res)=>{
   setup(res)
 })
-app.get('/admin', auth(), (req,res)=>{
+app.get('/admin', auth, (req,res,next)=>{
   res.redirect('https://localhost:10000')
 })
 
