@@ -25,7 +25,7 @@ app.use(exp.static('resources'));
 app.use(exp.json())
 
 function auth(req, res, next){
-  console.log(next);
+  console.log('some1 logged in');
   return next()
 }
 
@@ -52,7 +52,7 @@ app.get('/admin/setup/db', auth, (req,res)=>{
   setup(res)
 })
 app.get('/admin', auth, (req,res,next)=>{
-  res.redirect('https://localhost:10000')
+  res.redirect('/:10000')
 })
 
 
