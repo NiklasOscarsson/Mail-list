@@ -13,7 +13,7 @@ cron.schedule('0 8 * * 1' , ()=>{
   mailer[0].sendReminderMail()
   console.log('reminded people');
 })
-cron.schedule('0 17 * * 3' , async ()=>{
+cron.schedule('0 17 * * 5' , async ()=>{
   await mailer[0].updateMailTemplate()
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0].confirmationAdress)
@@ -24,10 +24,16 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
+function auth(req,res,next){
+
+    next()
+}
+
+
+//GET
 app.get('/', (req,res)=>{
   res.sendFile('index.html', {root:'./views/'})
 })
-
 app.get('/reminder', (req,res)=>{
   mailer[0].sendReminderMail()
   res.send("reminded people")
@@ -37,18 +43,20 @@ app.get('/confirmation', async (req,res)=>{
   mailer[0].sendConfimationMailTest()
   res.send('mail sent to '+ mailer[0].to)
 })
-
 app.get('/confirmed/:person', async (req,res)=>{
   await mailer[0].updateMailTemplate()
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0][req.params.person])
 })
-
-app.get('/admin/setup/db', (req,res)=>{
+app.get('/admin/setup/db', auth(), (req,res)=>{
   setup(res)
+})
+app.get('/admin', auth(), (req,res)=>{
+  res.redirect('https://localhost:10000')
 })
 
 
+//POST
 app.post('/setSubject',async (req,res)=>{
   let date = new Date
   let thisWeek = date.getWeek()
