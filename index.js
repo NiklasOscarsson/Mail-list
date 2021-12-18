@@ -8,6 +8,7 @@ const cron = require('node-cron')
 const app = exp();
 const mailer = []
 mailer.push(new Mail())
+const jwt = require('jsonwebtoken')
 
 cron.schedule('0 8 * * 1' , ()=>{
   mailer[0].sendReminderMail()
@@ -23,6 +24,16 @@ app.use(cors())
 app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
+
+async function verifyToken(req, res, next){
+  const token = req.cookie.token || req.body.token || req.query.token || req.headers["x-access-token"]
+  const dbToken = await client.query(`
+    SELECT token FROM user
+    WHERE token = $1
+  `, [token])
+  if(dbToken.length > 0) return true
+  return false
+}
 
 function auth(req, res, next){
   console.log('some1 logged in');
@@ -48,6 +59,9 @@ app.get('/confirmed/:person', async (req,res)=>{
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0][req.params.person])
 })
+app.get('/admin/login', (req,res)=>{
+  res.sendFile('login.html',{root:'./views/'})
+})
 app.get('/admin/setup/db', auth, (req,res)=>{
   setup(res)
 })
@@ -71,7 +85,8 @@ app.post('/setSubject',async (req,res)=>{
   })
 })
 
-app.listen(80, (error)=>{
+
+app.listen(process.env.PORT || 3000, (error)=>{
   if(error){
     console.log(error);
   }else{

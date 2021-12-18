@@ -20,6 +20,17 @@ async function setup(res){
       PRIMARY KEY (id)
     )`
   )
+  .then(
+    await client.query(`
+    CREATE TABLE user (
+      name character(50) NOT NULL,
+      password character(50) NOT NULL,
+      token character(500),
+      id serial NOT NULL,
+      PRIMARY KEY (id)
+    )`
+  )
+  )
   .then(()=>{
     console.log('Setup completed');
     res.send('Setup successful');
