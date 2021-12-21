@@ -14,7 +14,7 @@ services:
 
   adminer:
     container_name: adminer_production_Mail
-    image: adminer
+    image: adminer:4.7.7
     restart: always
     ports:
       - 8080:8080

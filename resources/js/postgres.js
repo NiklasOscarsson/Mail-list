@@ -11,7 +11,7 @@ const client = new Client({
 
 async function setup(res){
   await client.query(`
-    CREATE TABLE reports (
+    CREATE TABLE IF NOT EXISTS reports (
       week integer NOT NULL,
       subject character(50) NOT NULL,
       report character(800) NOT NULL,
@@ -20,9 +20,13 @@ async function setup(res){
       PRIMARY KEY (id)
     )`
   )
-  .then(
-    await client.query(`
-    CREATE TABLE user (
+  .catch(err=>{
+    console.log(err);
+    return res.send('error setting up db: '+err);
+  })
+
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS users (
       name character(50) NOT NULL,
       password character(50) NOT NULL,
       token character(500),
@@ -30,15 +34,21 @@ async function setup(res){
       PRIMARY KEY (id)
     )`
   )
-  )
   .then(()=>{
     console.log('Setup completed');
-    res.send('Setup successful');
+    return res.send('Setup successful');
   })
   .catch((err)=>{
     console.log(err);
-    res.send('error setting up db: '+err);
+    return res.send('error setting up db: '+err);
   })
 }
 
-module.exports = {client, setup}
+async function dbTest(){
+  await client.query(`
+    INSERT INTO users (name, password)
+    VALUES ('niklas', 'bob')
+  `).then(r => console.log(r)).catch(err => console.log(err))
+}
+
+module.exports = {client, setup , dbTest}
