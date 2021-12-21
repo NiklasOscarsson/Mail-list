@@ -2,6 +2,7 @@ const sgMail=require('@sendgrid/mail');
 const {client} = require('./postgres')
 const {reminder, mail_list} = require('./reminder')
 const {sortHtmlTags} = require('./mailsorter')
+const cron = require('node-cron')
 require('./week')
 
 date=new Date

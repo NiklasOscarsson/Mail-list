@@ -1,24 +1,15 @@
 const exp = require('express');
-const Mail = require('./resources/js/mail');
-const {client, setup, dbTest} = require('./resources/js/postgres')
-require('./resources/js/week')
-const {verifyToken, getUser, setToken, loginAuth} = require('./resources/js/serverFunctions')
-require('dotenv').config();
 const cors = require('cors')
-const cron = require('node-cron')
+const cookie = require('cookie-parser')
+const Mail = require('./resources/js/mail');
+const {client, setup} = require('./resources/js/postgres')
+const {verifyToken, loginAuth} = require('./resources/js/serverFunctions')
+require('dotenv').config();
+require('./resources/js/week')
 const app = exp();
+
 const mailer = []
 mailer.push(new Mail())
-const cookie = require('cookie-parser')
-
-/* cron.schedule('0 8 * * 1' , ()=>{
-  mailer[0].sendReminderMail()
-})
-cron.schedule('0 17 * * 5' , async ()=>{
-  await mailer[0].updateMailTemplate()
-  mailer[0].sendConfimationMail()
-  res.send('mail sent to '+ mailer[0].confirmationAdress)
-}) */
 
 app.use(cookie())
 app.use(cors())
