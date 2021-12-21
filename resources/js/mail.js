@@ -36,6 +36,16 @@ class Mail {
       return result
     })
   }
+  schedualMails(){
+    cron.schedule('0 8 * * 1' , ()=>{
+      this.sendReminderMail()
+    })
+    cron.schedule('0 17 * * 5' , async ()=>{
+      await this.updateMailTemplate()
+      this.sendConfimationMail()
+      res.send('mail sent to '+ this.confirmationAdress)
+    }) 
+  }
   async sendReminderMail(){
     sgMail.send({
       to:this.reminder,
