@@ -2,8 +2,8 @@ const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./resources/js/mail');
-const {client, setup} = require('./resources/js/postgres')
-const {verifyToken, loginAuth} = require('./resources/js/serverFunctions')
+const {client, setup, dbTest} = require('./resources/js/postgres')
+const {verifyToken, loginAuth, updateCookie} = require('./resources/js/serverFunctions')
 require('dotenv').config();
 require('./resources/js/week')
 const app = exp();
@@ -17,7 +17,8 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-
+setup()
+//dbTest()
 //GET
 app.get('/', (req,res)=>{
   res.sendFile('index.html', {root:'./views/'})
@@ -36,14 +37,17 @@ app.get('/confirmed/:person', async (req,res)=>{
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0][req.params.person])
 })
-app.get('/admin', verifyToken, (req,res)=>{
+app.get('/admin', verifyToken, updateCookie, (req,res)=>{
   res.sendFile('admin.html',{root:'./views/'})
 })
 app.get('/admin/login', (req,res)=>{
   res.sendFile('login.html',{root:'./views/'})
 })
 app.get('/admin/setup/db', verifyToken,(req,res)=>{
-  setup(res)
+  const check = setup(res)
+  if(check){
+    res.send('Setup completed')
+  }
 })
 app.get('/admin/webmin', verifyToken, (req,res,next)=>{
   res.redirect('https://nti-karlstad.duckdns.org:10000/')

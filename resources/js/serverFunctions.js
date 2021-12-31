@@ -6,14 +6,17 @@ const cookie = require('cookie-parser')
 //verify user
 async function verifyToken(req, res, next){
     if(!req.cookies.token) return res.redirect('/admin/login');
-    const token = req.cookies.token
+    const token = jwt.verify(req.cookies.token, process.env.JWTKEY)
     const dbToken = await client.query(`
-      SELECT token FROM users
-      WHERE token = $1
+      SELECT email, id FROM users
+      WHERE email = $1
     `, [token])
     if(!dbToken || dbToken.length === 0) return res.redirect('/admin/login')
     return next()
-  
+  }
+  function updateCookie(req, res, next){
+    res.cookie('token', req.cookies.token, {maxAge: 60000*5, httpOnly: true, sameSite:true})
+    return next()
   }
   
   //create user
@@ -24,11 +27,11 @@ async function verifyToken(req, res, next){
   async function checkEncryption(users, plain){
     return users.filter(e => bcrypt.compareSync(plain, e.password.trim()))[0]
   }
-  async function getUser(name){
+  async function getUser(email){
     const result = await client.query(`
-      SELECT name, password, id FROM users
-      WHERE name = $1
-    `, [name])
+      SELECT firstName, email, password, id FROM users
+      WHERE email = $1
+    `, [email])
     .then(r => {
       return r.rows
     })
@@ -36,12 +39,7 @@ async function verifyToken(req, res, next){
   }
   async function setToken(user){
     date = new Date
-    let token = jwt.sign({user:user.id, time:date.getTime()}, process.env.JWTKEY)
-    await client.query(`
-      UPDATE users 
-      SET token = $1
-      WHERE id = $2
-    `,[token, user.id])
+    let token = jwt.sign({user:user.id, email:user.email, time:date.getTime()}, process.env.JWTKEY)
     return token
   }
   
@@ -49,15 +47,19 @@ async function verifyToken(req, res, next){
     const users = await getUser(req.body.username)
     const user = await checkEncryption(users, req.body.password)
     if(user == undefined){
-      console.log('Login Failed');
+      console.log(`Login failed for ${capitalize(req.body.username)}`);
       res.sendFile('login.html', {root:'./views/'})
     }
     else{
       const cookie = await setToken(user)
-      let name = user.name[0].toUpperCase() + user.name.substr(1).trim() //Title word
+      let name = capitalize(user.firstname) //Title word
       console.log(`${name} just logged in`);
-      res.cookie('token', cookie, {maxAge: 30000}).redirect('/admin')
+      res.cookie('token', cookie, {maxAge: 1000*60*5, httpOnly: true}).redirect('/admin')
     }
   }
 
-module.exports = {verifyToken, getUser, setToken, loginAuth}
+  function capitalize(word){
+    return word[0].toUpperCase() + word.substr(1).trim()
+  }
+
+module.exports = {verifyToken, getUser, setToken, loginAuth, updateCookie}
