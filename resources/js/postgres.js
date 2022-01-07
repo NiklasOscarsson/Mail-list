@@ -105,7 +105,7 @@ async function dbTest(){
   await client.query(`
     INSERT INTO users (firstName, lastName, email, password, roleId, my_students_id)
     VALUES ('niklas', 'oscarsson', 'niklas.oscarssons@gmail.com', $1, 1, '{1}')
-  `, [password]).then(r => console.log(r)).catch(err => console.log(err))
+  `, [password]).catch(err => console.log(err))
 }
 
 module.exports = {client, setup , dbTest}
