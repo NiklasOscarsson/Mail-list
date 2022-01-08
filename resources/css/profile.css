@@ -1,0 +1,16 @@
+#adminNav{
+    position: fixed;
+    left:0;
+    top: 0;
+    height: 100vh;
+    width: 8%;
+    transform: translateX(-85%);
+    transition: .7s;
+    background-color: gray;
+}
+#adminNav:hover{
+    transform: translateX(0);
+}
+#adminLinks{
+    padding: 10%;
+}

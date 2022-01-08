@@ -4,10 +4,10 @@ const bcrypt = require('bcrypt');
 
 const client = new Client({
   user: process.env.PGUSER,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
+  host: process.env.PGHOST,
+  database: process.env.PGDATABASE,
   password: process.env.PGPASS,
-  port: process.env.PORT,
+  port: process.env.PGPORT,
 })
 
 async function setup(res){

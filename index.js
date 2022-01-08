@@ -1,11 +1,11 @@
 const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
-const Mail = require('./resources/js/mail');
-const {client, setup, dbTest} = require('./resources/js/postgres')
-const {verifyToken, loginAuth, updateCookie} = require('./resources/js/serverFunctions')
+const Mail = require('./resources/js/server/mail');
+const {client, setup, dbTest} = require('./resources/js/server/postgres')
+const {verifyToken, loginAuth, updateCookie, verifyAdmin} = require('./resources/js/server/serverFunctions')
 require('dotenv').config();
-require('./resources/js/week')
+require('./resources/js/server/week')
 const app = exp();
 
 const mailer = []
@@ -17,9 +17,15 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-setup()
-//dbTest()
+//setup()
+
 //GET
+
+app.get('/test', (req, res)=>{
+  res.sendFile('profile.html', {root:'./views/'})
+})
+
+
 app.get('/', (req,res)=>{
   res.sendFile('index.html', {root:'./views/'})
 })
@@ -37,19 +43,19 @@ app.get('/confirmed/:person', async (req,res)=>{
   mailer[0].sendConfimationMail()
   res.send('mail sent to '+ mailer[0][req.params.person])
 })
-app.get('/admin', verifyToken, updateCookie, (req,res)=>{
-  res.sendFile('admin.html',{root:'./views/'})
+app.get('/profile', verifyToken, updateCookie, (req,res)=>{
+  res.sendFile('profile.html',{root:'./views/'})
 })
-app.get('/admin/login', (req,res)=>{
+app.get('/profile/login', (req,res)=>{
   res.sendFile('login.html',{root:'./views/'})
 })
-app.get('/admin/setup/db', verifyToken,(req,res)=>{
+app.get('/profile/setup/db', verifyToken,(req,res)=>{
   const check = setup(res)
   if(check){
     res.send('Setup completed')
   }
 })
-app.get('/admin/webmin', verifyToken, (req,res,next)=>{
+app.get('/profile/webmin', verifyToken, (req,res,next)=>{
   res.redirect('https://nti-karlstad.duckdns.org:10000/')
 })
 
@@ -68,7 +74,9 @@ app.post('/setSubject',async (req,res)=>{
     res.send(`Error occured`);
   })
 })
-app.post('/admin/login', loginAuth, (req,res)=>{})
+app.post('/profile/login', loginAuth)
+
+app.post('/isAdmin', verifyAdmin)
 
 
 app.listen(process.env.SERVERPORT || 3000, (error)=>{
