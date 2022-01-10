@@ -30,7 +30,7 @@ main{
 }
 .main-divs{ 
     width: 40%;
-    min-height: 35vh;
+    min-height: 40vh;
     margin-bottom: 5%;
     min-width: 420px;
 }
@@ -78,4 +78,7 @@ h4{
 }
 .green{
     color: green;
+}
+.save-button{
+    text-align: center;
 }
