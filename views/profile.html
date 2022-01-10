@@ -10,51 +10,173 @@
     <link rel="stylesheet" href="./css/profile.css">
     <script src="https://unpkg.com/vue@next"></script>
     <script src="./js/pages/profile.js" defer></script>
+    <script src="https://kit.fontawesome.com/2e1e20497f.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <div id="app">
-        <div id="adminNav" v-if="isAdmin === 'Admin'">
+        <div id="adminNav" v-if="isAdmin">
             <div id="adminLinks">
-                <h1>{{isAdmin}}</h1>
-                <a href="/admin/setup/db">
+                <h1>{{user.role}}</h1>
+                <a href="/profile/setup/db">
                     <p>Setup DB</p>
                 </a>
-                <a href="/admin/webmin">
+                <a href="/profile/webmin">
                     <p>Webmin</p>
                 </a>
             </div>
         </div>
         <main>
             <div id="my-students" class="card main-divs">
-                <h3 id="title">Mina elever</h3>
-                <div class="table-text">
-                    <h4>elevens namn</h4>
-                </div>
-                <div class="table-text">
-                    <h4>elevens VH</h4>
+                <h3 class="title">Mina elever</h3>
+                <div class="table-titles">
+                    <div class="table-text table-div">
+                        <h4>Elevens namn</h4>
+                    </div>
+                    <div class="table-text table-div">
+                        <h4>Elevens VH</h4>
+                    </div>
                 </div>
                 <hr>
-                <ul>
+                <ul class="student-list">
                     <!-- add summary page -->
 
-                    <a href="#" v-for="student in students">
+                    <a href="#" v-for="student in myStudents">
                         <li>
-                            <div>
-                                <h4 :title="student.student_mail">{{student.name}}</h4>
-                            </div>
-                            <div>
-                                <h4 :title="student.guardian_mail">{{student.guardian}}</h4>
+                            <div class="student">
+                                <div class="table-div">
+                                    <h4 :title="student.student_mail">{{student.first_name}} {{student.last_name}}</h4>
+                                </div>
+                                <div class="table-div">
+                                    <h4 :title="student.guardian_mail">{{student.guardian_first_name}} {{student.guardian_last_name}}</h4>
+                                </div>
                             </div>
                         </li>
                     </a>
                 </ul>
             </div>
             <div id="students-todo" class="card main-divs">
-                <h3>students-todo</h3>
+                <h3 class="title">Elever att skriva om</h3>
+                <div class="table-titles">
+                    <div class="table-text table-div">
+                        <h4>Elevens namn</h4>
+                    </div>
+                    <div class="table-text table-div">
+                        <h4>Ämne</h4>
+                    </div>
+                </div>
+                <hr>
+                <ul class="student-list">
+                    <!-- add input page -->
+
+                    <a href="#" v-for="student in todoStudents">
+                        <li>
+                            <div class="student">
+                                <div class="table-div">
+                                    <h4 :title="student.student_mail">{{student.first_name}} {{student.last_name}}</h4>
+                                </div>
+                                <div class="table-div">
+                                    <h4 :title="student.guardian_mail">{{student.guardian}}</h4>
+                                </div>
+                            </div>
+                        </li>
+                    </a>
+                </ul>
             </div>
-            <div id="add-student" class="card main-divs"></div>
-            <div id="students-done" class="card main-divs"></div>
+
+
+
+            <div id="add-student" class="card main-divs">
+                <h3 class="title">Lägg till/Ändra elev</h3>
+                <hr>
+                <form class="form">
+                    <div class="select">
+                        <div>
+                            <label for="class">Klass: </label>
+                            <select name="class" id="" v-model="choosenClass">
+                                <optgroup label="EE">
+                                    <option value="EE19">EE19</option>
+                                    <option value="EE20">EE20</option>
+                                    <option value="EE21">EE21</option>
+                                </optgroup>
+                                <optgroup label="ES">
+                                    <option value="ES19">ES19</option>
+                                    <option value="ES20">ES20</option>
+                                    <option value="ES21">ES21</option>
+                                </optgroup>
+                                <optgroup label="TE">
+                                    <option value="TE19">TE19</option>
+                                    <option value="TE20">TE20</option>
+                                    <option value="TE21">TE21</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="class" v-if="choosenClass !== ''">Elev: </label>
+                            <select name="class" id="" v-model="choosenStudent" v-if="choosenClass !== ''">
+                                <option value="">Ingen vald</option>
+                                <optgroup :label="'elever i ' + choosenClass">
+                                    <option v-for="student in schoolClass" :value="student">{{student.first_name + ' ' + student.last_name}}</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                    </div>
+                    <br>
+                    <div class="input-grid">
+                        <label for="fName">Namn elev: </label>
+                        <input type="text" name="student_fName" placeholder="Elevens förnamn" v-model="newStudent.studentFirstName">
+                        <br>
+                        <input type="text" name="student_lName" placeholder="Elevens efternamn" v-model="newStudent.studentLastName">
+                        <label for="VHfName">E-post elev: </label>
+                        <input type="text" name="student_email" id="" placeholder="Elevens e-post" v-model="newStudent.studentEmail">
+                        
+                    </div>
+                    <br>
+                    <div class="input-grid">
+                        <label for="VHfName">Namn VH: </label>
+                        <input type="text" name="VHfName" placeholder="Vårdnadshavarens förnamn" v-model="newStudent.guardianFirstName">
+                        <br>
+                        <input type="text" name="VHlName" placeholder="Vårdnadshavarens efternamn" v-model="newStudent.guardianLastName">
+                        <label for="VHfName">E-post VH: </label>
+                        <input type="text" name="VH_email" id="" placeholder="Vårdnadshavarens e-post" v-model="newStudent.guardianEmail">
+                    </div>
+                    <br>
+                    <div class="select">
+                        <button @click.prevent="addSubject"><i class='fas fa-plus green'></i> Lägg till ämne</button>
+                        <button @click.prevent="viewSubject">Visa elevens ämnen</button>
+                    </div>
+                </form>
+            </div>
+
+
+            <div id="students-done" class="card main-divs">
+                <h3 class="title">Färdiga elever</h3>
+                <div class="table-titles">
+                    <div class="table-text table-div">
+                        <h4>Elevens namn</h4>
+                    </div>
+                    <div class="table-text table-div">
+                        <h4>Ämne</h4>
+                    </div>
+                </div>
+                <hr>
+                <ul class="student-list">
+                    <!-- add input page -->
+
+                    <a href="#" v-for="student in doneStudents">
+                        <li>
+                            <div class="student">
+                                <div class="table-div">
+                                    <h4 :title="student.student_mail">{{student.name}}</h4>
+                                </div>
+                                <div class="table-div">
+                                    <h4 :title="student.guardian_mail">{{student.guardian}}</h4>
+                                </div>
+                            </div>
+                        </li>
+                    </a>
+                </ul>
+            </div>
         </main>
     </div>
 </body>

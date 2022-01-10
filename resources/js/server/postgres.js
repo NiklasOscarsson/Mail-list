@@ -15,7 +15,7 @@ async function setup(res){
   await client.query(`
     CREATE TABLE IF NOT EXISTS subjects (
       subject character(40) NOT NULL,
-      course_code character(6) NOT NULL,
+      course_code character(8) NOT NULL,
       teacherId integer ARRAY NOT NULL,
       id serial NOT NULL,
       PRIMARY KEY (id)
@@ -27,11 +27,13 @@ async function setup(res){
   })
   await client.query(`
     CREATE TABLE IF NOT EXISTS students (
-      name character(50) NOT NULL,
+      first_name character(20) NOT NULL,
+      last_name character(20) NOT NULL,
       student_mail character(50),
       class character(4) NOT NULL,
       subjectId integer ARRAY NOT NULL,
-      guardian character(50) NOT NULL,
+      guardian_first_name character(20) NOT NULL,
+      guardian_last_name character(20) NOT NULL,
       guardian_mail character(50) NOT NULL,
       id serial NOT NULL,
       PRIMARY KEY (id)
@@ -92,6 +94,50 @@ async function setup(res){
       PRIMARY KEY (id)
     )`
   )
+  .then(async()=>{
+    const subjects = [
+      {subject:'Design 1', courseCode: 'DESDES01', teacherId: [1]},
+      {subject:'Digitalt skapande', courseCode: 'DIGDIG01', teacherId: [2]},
+      {subject:'Engelska', courseCode: 'ENGENG07', teacherId: [3]},
+      {subject:'Gränssnittsdesign', courseCode: 'GRÄGRÄ01', teacherId: [2]},
+      {subject:'Historia', courseCode: 'HISHIS01', teacherId: [4]},
+      {subject:'Idrott', courseCode: 'IDRIDR01', teacherId: [5]},
+      {subject:'Konstarterna och Samhället', courseCode: 'KOSKOS01', teacherId: [2]},
+      {subject:'Medieproduktion', courseCode: 'MEPMEP01', teacherId: [2]},
+      {subject:'Religion', courseCode: 'RELREL01', teacherId: [4]},
+      {subject:'Svenska', courseCode: 'SVESVE02', teacherId: [6]},
+      {subject:'Webbutveckling', courseCode: 'WEUWEB01', teacherId: [7]},
+    ]
+    subjects.forEach(async e => {
+      await client.query(`
+      INSERT INTO subjects 
+      (subject, course_code, teacherid)
+      VALUES ($1, $2, $3)
+      `, [e.subject, e.courseCode, e.teacherId])
+    })
+  })
+  .then(async()=>{  //TEMPORÄRT
+    const elev = {
+      fNamn: 'Lucas',
+      eNamn: 'Hidenius',
+      email: '2004lucke@gmail.com',
+      klass: 'ES20',
+      subjects: [1,2,3,4,5,6,7,8,9,10,11],
+      vhFNamn: 'Marita',
+      vhENamn: 'Hidenius',
+      vhEmail: 'maritahidenius@hotmail.com',
+    }
+    await client.query(`
+    INSERT INTO students (first_name, last_name, student_mail, class, subjectid, guardian_first_name, guardian_last_name, guardian_mail)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    `,[elev.fNamn, elev.eNamn, elev.email, elev.klass, elev.subjects, elev.vhFNamn, elev.vhENamn, elev.vhEmail]) 
+  })
+  .then(async()=>{
+    await client.query(`
+    INSERT INTO roles (role)
+    VALUES ('Admin')
+    `) 
+  })
   .then(()=>{
     console.log('Setup successful');
     return true
@@ -103,6 +149,14 @@ async function setup(res){
   return complete
 }
 
+async function getStudents(req,res,next){
+  let students 
+  await client.query(`
+    SELECT * FROM students
+  `).then(r => students = r.rows)
+  res.json(students);
+}
+
 async function dbTest(){
   const password = await bcrypt.hash('bob', 8)
   await client.query(`
@@ -111,4 +165,4 @@ async function dbTest(){
   `, [password]).catch(err => console.log(err))
 }
 
-module.exports = {client, setup , dbTest}
+module.exports = {client, setup , dbTest, getStudents}

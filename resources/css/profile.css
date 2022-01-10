@@ -7,6 +7,7 @@
     top: 0;
     height: 100vh;
     width: 12%;
+    min-width: 150px;
     color: transparent;
     transform: translateX(-85%);
     transition: .7s;
@@ -29,39 +30,52 @@ main{
 }
 .main-divs{ 
     width: 40%;
-    min-height: 30vh;
+    min-height: 35vh;
     margin-bottom: 5%;
+    min-width: 420px;
 }
-
-/* My Students */
-
-#my-students #title{
+main .title{
     text-align: center;
     padding-top: 1rem;
 }
-#my-students div{
-    display: inline-block;
-    width: 48%;
+
+/* cards */
+
+.table-titles{
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
 }
-#my-students .table-text{
-    display: inline-block;
-    margin-left: 2.3rem;
-    width: 37%;
-}
-#my-students .table-text h4{
-    margin: .2rem;
-}
-#my-students hr{
-    margin: 0;
-}
-#my-students ul{
+.student-list{
+    padding: 0;
     list-style: none;
     margin-top: .5rem;
 }
-#my-students h4{ 
+.student{
+    display: flex;
+    justify-content: space-evenly;
+    width: 100%;
+}
+.table-div{
+    width: 30%;
+}
+h4{ 
     margin-top: .5rem;
     margin-bottom: .5rem;
 }
 
-/* students-todo */
-
+.form .select{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 90%;
+    margin: auto;
+}
+.form .input-grid{
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    max-width: 90%;
+    margin: auto;
+}
+.green{
+    color: green;
+}

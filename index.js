@@ -2,8 +2,8 @@ const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./resources/js/server/mail');
-const {client, setup, dbTest} = require('./resources/js/server/postgres')
-const {verifyToken, loginAuth, updateCookie, verifyAdmin} = require('./resources/js/server/serverFunctions')
+const {client, setup, getStudents, dbTest} = require('./resources/js/server/postgres')
+const {verifyToken, loginAuth, updateCookie, verifyUser} = require('./resources/js/server/serverFunctions')
 require('dotenv').config();
 require('./resources/js/server/week')
 const app = exp();
@@ -18,6 +18,7 @@ app.use(exp.static('resources'));
 app.use(exp.json())
 
 //setup()
+dbTest()
 
 //GET
 
@@ -74,9 +75,12 @@ app.post('/setSubject',async (req,res)=>{
     res.send(`Error occured`);
   })
 })
+
+app.post('/getStudents', getStudents)
+
 app.post('/profile/login', loginAuth)
 
-app.post('/isAdmin', verifyAdmin)
+app.post('/userInfo', verifyUser)
 
 
 app.listen(process.env.SERVERPORT || 3000, (error)=>{

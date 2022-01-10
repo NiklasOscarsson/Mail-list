@@ -3,7 +3,7 @@ function sortMail(results){
 }
 
 function sortHtmlTags(result){
-  let design = result.filter(e=> e.subject.trim() === "Design")
+  let Design = result.filter(e=> e.subject.trim() === "Design")
   let Digitalt_skapande = result.filter(e=> e.subject.trim() === "Digitalt skapande")
   let Engelska = result.filter(e=> e.subject.trim() === "Engelska")
   let Gränssnittsdesign = result.filter(e=> e.subject.trim() === "Gränssnittsdesign")
@@ -15,7 +15,7 @@ function sortHtmlTags(result){
   let Svenska = result.filter(e=> e.subject.trim() === "Svenska")
   let Webbutveckling = result.filter(e=> e.subject.trim() === "Webbutveckling")
   let newResult = []
-  design.forEach(e => {newResult.push(e)});
+  Design.forEach(e => {newResult.push(e)});
   Digitalt_skapande.forEach(e => {newResult.push(e)});
   Engelska.forEach(e => {newResult.push(e)});
   Gränssnittsdesign.forEach(e => {newResult.push(e)});

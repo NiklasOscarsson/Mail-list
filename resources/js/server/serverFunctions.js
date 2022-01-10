@@ -19,16 +19,16 @@ function updateCookie(req, res, next){
   return next()
 }
 
-//verify admin
-async function verifyAdmin(req, res, next){
+//verify user
+async function verifyUser(req, res, next){
   if(!req.cookies.token) return next()
   const token = jwt.verify(req.cookies.token, process.env.JWTKEY);
   await client.query(`
-    SELECT roles.role FROM users
+    SELECT firstname, lastname, my_students_id, roles.role FROM users
     JOIN roles ON users.roleid = roles.id
     WHERE users.email = $1 AND users.id = $2
   `, [token.email, token.user])
-  .then(r => res.json(r.rows[0].role.trim()))
+  .then(r => res.json(r.rows))
 }
 
 //create user
@@ -79,5 +79,5 @@ module.exports = {
   verifyToken, 
   loginAuth, 
   updateCookie, 
-  verifyAdmin
+  verifyUser
 }
