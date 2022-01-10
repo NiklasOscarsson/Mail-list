@@ -45,7 +45,9 @@ async function setup(res){
   })
   await client.query(`
     CREATE TABLE IF NOT EXISTS teachers (
-      name character(50) NOT NULL,
+      first_name character(20) NOT NULL,
+      last_name character(20) NOT NULL,
+      userId integer,
       id serial NOT NULL,
       PRIMARY KEY (id)
     )`
@@ -81,7 +83,22 @@ async function setup(res){
     console.log('error setting up roles db: '+err);
     return false
   })
-
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS evaluations (
+      evaluation character(500) NOT NULL,
+      week integer NOT NULL,
+      studentId integer NOT NULL,
+      userId integer NOT NULL,
+      lessonId integer NOT NULL,
+      teacherId integer NOT NULL,
+      id serial NOT NULL,
+      PRIMARY KEY (id)
+    )`
+  )
+  .catch(err=>{
+    console.log('error setting up evaluations db: '+err);
+    return false
+  })
   complete = await client.query(`
     CREATE TABLE IF NOT EXISTS timers (
       remindDay integer NOT NULL,
@@ -94,6 +111,10 @@ async function setup(res){
       PRIMARY KEY (id)
     )`
   )
+  .catch((err)=>{
+    console.log('error setting up timer db: '+err);
+    return false
+  })
   .then(async()=>{
     const subjects = [
       {subject:'Design 1', courseCode: 'DESDES01', teacherId: [1]},
@@ -133,10 +154,33 @@ async function setup(res){
     `,[elev.fNamn, elev.eNamn, elev.email, elev.klass, elev.subjects, elev.vhFNamn, elev.vhENamn, elev.vhEmail]) 
   })
   .then(async()=>{
-    await client.query(`
-    INSERT INTO roles (role)
-    VALUES ('Admin')
-    `) 
+    const teachers = [
+      {fNamn: 'Robin', eNamn: 'Bräck', userId: null},
+      {fNamn: 'Thomas', eNamn: 'Hammargren', userId: null},
+      {fNamn: 'Andreas', eNamn: 'Karlsson', userId: null},
+      {fNamn: 'Hanna', eNamn: 'Hörling', userId: null},
+      {fNamn: 'Robert', eNamn: 'Jönsson', userId: null},
+      {fNamn: 'Andreas', eNamn: 'Fritiofsson', userId: null},
+      {fNamn: 'Niklas', eNamn: 'Oscarsson', userId: 1},
+    ]
+    teachers.forEach(async e => {
+      await client.query(`
+        INSERT INTO teachers (first_name, last_name, userid)
+        VALUES ($1, $2, $3)
+      `, [e.fNamn, e.eNamn, e.userId]) 
+    })
+  })
+  .then(async()=>{
+    const roles = ['Admin', 'User']
+    for(i=0; i<roles.length; i++){
+      await client.query(`
+        INSERT INTO roles (role)
+        VALUES ($1)
+      `, [roles[i]]) 
+    }
+  })
+  .then(()=>{
+    dbTest()
   })
   .then(()=>{
     console.log('Setup successful');
@@ -165,4 +209,4 @@ async function dbTest(){
   `, [password]).catch(err => console.log(err))
 }
 
-module.exports = {client, setup , dbTest, getStudents}
+module.exports = {client, setup, getStudents}

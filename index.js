@@ -18,7 +18,7 @@ app.use(exp.static('resources'));
 app.use(exp.json())
 
 //setup()
-dbTest()
+
 
 //GET
 
