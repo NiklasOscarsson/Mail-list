@@ -5,17 +5,17 @@ const cookie = require('cookie-parser')
 
 //verify user
 async function verifyToken(req, res, next){
-    if(!req.cookies.token) return res.redirect('/admin/login');
+    if(!req.cookies.token) return res.redirect('/profile/login');
     const token = jwt.verify(req.cookies.token, process.env.JWTKEY)
     const dbToken = await client.query(`
       SELECT email, id FROM users
       WHERE email = $1
     `, [token])
-    if(!dbToken || dbToken.length === 0) return res.redirect('/admin/login')
+    if(!dbToken || dbToken.length === 0) return res.redirect('/profile/login')
     return next()
 }
 function updateCookie(req, res, next){
-  res.cookie('token', req.cookies.token, {maxAge: 60000*5, httpOnly: false, sameSite:true})
+  res.cookie('token', req.cookies.token, {maxAge: 60000*10, httpOnly: false, sameSite:true})
   return next()
 }
 
@@ -66,7 +66,7 @@ async function loginAuth(req, res, next){
     const cookie = await setToken(user)
     let name = capitalize(user.firstname) //Title word
     console.log(`${name} just logged in`);
-    res.cookie('token', cookie, {maxAge: 1000*60*5, httpOnly: false}).redirect('/admin')
+    res.cookie('token', cookie, {maxAge: 1000*60*10, httpOnly: false}).redirect('/profile')
   }
 }
 

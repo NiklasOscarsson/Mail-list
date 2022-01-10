@@ -28,8 +28,11 @@ async function setup(res){
   await client.query(`
     CREATE TABLE IF NOT EXISTS students (
       name character(50) NOT NULL,
+      student_mail character(50),
       class character(4) NOT NULL,
       subjectId integer ARRAY NOT NULL,
+      guardian character(50) NOT NULL,
+      guardian_mail character(50) NOT NULL,
       id serial NOT NULL,
       PRIMARY KEY (id)
     )`

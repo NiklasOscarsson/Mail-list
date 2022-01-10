@@ -2,7 +2,9 @@ const app = Vue.createApp({
     data(){
         return {
             isAdmin: false,
-            
+            students: [
+                {name: 'Bobian Karlsson', student_mail: 'Blob.bob@bob.com', guardian: 'Niklas Oscarsson', guardian_mail:'Niklas.Oscarsson@gmail.com', id:1},
+            ]
         }
     },
     methods: {

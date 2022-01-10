@@ -1,16 +1,67 @@
+@import url(./framework/popcorn.css);
+
+/* Admin nav */
 #adminNav{
     position: fixed;
     left:0;
     top: 0;
     height: 100vh;
-    width: 8%;
+    width: 12%;
+    color: transparent;
     transform: translateX(-85%);
     transition: .7s;
     background-color: gray;
 }
 #adminNav:hover{
     transform: translateX(0);
+    color: black;
 }
 #adminLinks{
     padding: 10%;
 }
+
+/* Main */
+main{
+    margin: 3vh 3% 0 3%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.main-divs{ 
+    width: 40%;
+    min-height: 30vh;
+    margin-bottom: 5%;
+}
+
+/* My Students */
+
+#my-students #title{
+    text-align: center;
+    padding-top: 1rem;
+}
+#my-students div{
+    display: inline-block;
+    width: 48%;
+}
+#my-students .table-text{
+    display: inline-block;
+    margin-left: 2.3rem;
+    width: 37%;
+}
+#my-students .table-text h4{
+    margin: .2rem;
+}
+#my-students hr{
+    margin: 0;
+}
+#my-students ul{
+    list-style: none;
+    margin-top: .5rem;
+}
+#my-students h4{ 
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+}
+
+/* students-todo */
+
