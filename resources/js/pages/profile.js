@@ -1,14 +1,17 @@
 const app = Vue.createApp({
     data(){
         return {
+            date: new Date,
             user: '',
             allStudents: [],
+            evaluations: [],
+            subjects: [],
+            teachers: [],
             myStudents: [],
             todoStudents: [],
             doneStudents: [],
             choosenClass: '',
             choosenStudent: {},
-            subjects: [{}],
             addSubjectModal: false,
             viewSubjectModal: false,
         }
@@ -28,13 +31,25 @@ const app = Vue.createApp({
         },
         addSubject(){
             this.addSubjectModal = true
-            console.log(this.choosenStudent);
+            console.log(this.allStudents);
+            console.log(this.evaluations);
+            console.log(this.subjects);
+            console.log(this.teachers);
         },
         viewSubject(){
             this.viewSubjectModal = true
         },
-        sortStudents(students, userStudentId){
-            this.myStudents = students.filter(e => userStudentId.includes(e.id));
+        async sort(students, userStudentId){
+            this.myStudents = await students.filter(e => userStudentId.includes(e.id));
+            this.todoStudents = this.myStudents.filter(e => {
+                // finns ingen utvärdering som är veckans => med e.id 
+            })
+            console.log(this.todoStudents);
+        },
+        sortEvaluations(student){
+            let myEvals = this.evaluations.filter(e => e.studentid === student.id)
+            myEvals = myevals.filter(e => e.week !== this.date.getWeek())
+            console.log(myEvals);
         }
     },
     computed: {
@@ -81,12 +96,9 @@ const app = Vue.createApp({
                 credentials: 'same-origin',
                 method: 'POST'
             })
-            .then(r => {
-                r.json().then(r => {
-                    this.user = r[0];
-                });
-            })
-            fetch('/getStudents', {
+            .then(r => r.json()
+            .then(r => this.user = r[0]))
+            fetch('/getInfo', {
                 headers: {
                     'content-type':'application/json'
                 },
@@ -94,21 +106,19 @@ const app = Vue.createApp({
                 credentials: 'same-origin',
                 method: 'POST'
             })
+            .then(r => r.json()
             .then(r => {
-                r.json().then(r => {
-                    this.allStudents = r;
-                    
-                })
-                .then(()=>{
-                    this.sortStudents(this.allStudents, this.user.my_students_id)
-                })
-            })
-            .then(()=>{
-                
-            })
-            
+                this.allStudents = r.students
+                this.evaluations = r.evaluations
+                this.subjects = r.subjects
+                this.teachers = r.teachers
+            }))
+            .then(()=> this.sort(this.allStudents, this.user.my_students_id))
         }
     }
 })
 
 app.mount('#app')
+
+
+//lib.deltasignal.se

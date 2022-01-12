@@ -1,6 +1,7 @@
 const { Client }=require('pg');
 require('dotenv').config()
 const bcrypt = require('bcrypt');
+const JWT = require('jsonwebtoken')
 
 const client = new Client({
   user: process.env.PGUSER,
@@ -12,6 +13,22 @@ const client = new Client({
 
 async function setup(res){
   let complete = false
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      firstName character(20) NOT NULL,
+      lastName character(20) NOT NULL,
+      email character(60) NOT NULL,
+      password character(80) NOT NULL,
+      roleId integer NOT NULL,
+      my_students_id integer ARRAY NOT NULL,
+      id serial NOT NULL,
+      PRIMARY KEY (id)
+    )`
+  )
+  .catch(err=>{
+    console.log('error setting up user db: '+err);
+    return false
+  })
   await client.query(`
     CREATE TABLE IF NOT EXISTS subjects (
       subject character(40) NOT NULL,
@@ -56,22 +73,7 @@ async function setup(res){
     console.log('error setting up teacher db: '+err);
     return false
   })
-  await client.query(`
-    CREATE TABLE IF NOT EXISTS users (
-      firstName character(20) NOT NULL,
-      lastName character(20) NOT NULL,
-      email character(60) NOT NULL,
-      password character(80) NOT NULL,
-      roleId integer NOT NULL,
-      my_students_id integer ARRAY NOT NULL,
-      id serial NOT NULL,
-      PRIMARY KEY (id)
-    )`
-  )
-  .catch(err=>{
-    console.log('error setting up user db: '+err);
-    return false
-  })
+  
   await client.query(`
     CREATE TABLE IF NOT EXISTS roles (
       role character(50) NOT NULL,
@@ -193,13 +195,27 @@ async function setup(res){
   return complete
 }
 
-async function getStudents(req,res,next){
-  let students 
+async function getInfo(req,res,next){
+  let info = {}
+  const user = JWT.decode(req.cookies.token).user
   await client.query(`
     SELECT * FROM students
-  `).then(r => students = r.rows)
-  res.json(students);
+  `).then(r => info.students = r.rows)
+  await client.query(`
+    SELECT * FROM subjects
+  `).then(r => info.subjects = r.rows)
+  await client.query(`
+    SELECT * FROM teachers
+  `).then(r => info.teachers = r.rows)
+  await client.query(`
+    SELECT * FROM evaluations
+    WHERE userid = $1
+  `, [user]).then(r => info.evaluations = r.rows)
+  res.json(info)
+
 }
+
+//get
 
 async function dbTest(){
   const password = await bcrypt.hash('bob', 8)
@@ -209,4 +225,4 @@ async function dbTest(){
   `, [password]).catch(err => console.log(err))
 }
 
-module.exports = {client, setup, getStudents}
+module.exports = {client, setup, getInfo}

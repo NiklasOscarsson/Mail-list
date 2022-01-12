@@ -2,7 +2,7 @@ const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./resources/js/server/mail');
-const {client, setup, getStudents, dbTest} = require('./resources/js/server/postgres')
+const {client, setup, getInfo, dbTest} = require('./resources/js/server/postgres')
 const {verifyToken, loginAuth, updateCookie, verifyUser} = require('./resources/js/server/serverFunctions')
 require('dotenv').config();
 require('./resources/js/server/week')
@@ -50,9 +50,12 @@ app.get('/profile', verifyToken, updateCookie, (req,res)=>{
 app.get('/profile/login', (req,res)=>{
   res.sendFile('login.html',{root:'./views/'})
 })
-app.get('/profile/setup/db', verifyToken,(req,res)=>{
-  const check = setup(res)
+app.get('/profile/setup/db', verifyToken,async (req,res)=>{
+  console.log('in');
+  const check = await setup(res)
+  console.log(check);
   if(check){
+    console.log('in 2');
     res.send('Setup completed')
   }
 })
@@ -76,7 +79,7 @@ app.post('/setSubject',async (req,res)=>{
   })
 })
 
-app.post('/getStudents', getStudents)
+app.post('/getInfo', getInfo)
 
 app.post('/profile/login', loginAuth)
 
