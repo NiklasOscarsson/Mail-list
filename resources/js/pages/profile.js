@@ -14,6 +14,10 @@ const app = Vue.createApp({
             choosenStudent: {},
             addSubjectModal: false,
             viewSubjectModal: false,
+            evaluationModal: false,
+            evaluatingStudent: {},
+            evaluationText: '',
+            includedEvaluations: [],
         }
     },
     methods: {
@@ -29,28 +33,73 @@ const app = Vue.createApp({
             }
             return tokens
         },
+
+        evaluate(student){
+            if(this.evaluatingStudent !== student){
+                this.evaluationText = ''
+                this.evaluatingStudent = student
+            }
+            this.evaluationModal = true
+        },
+        closeEvaluationModal(){
+            this.evaluationModal = false
+        },
+        saveEvaluationModal(){
+            if(this.evaluationText = ''){
+                this.evalWarning = true /* MAKE A WARNING + SEND SHIT */
+                setTimeout(()=>{this.evalWarning = false}, 5000)
+            }
+            const sendEvaluation = {
+                evaluation: this.evaluationText,
+                include: this.includedEvaluations,
+                studentId: this.evaluatingStudent.id,
+                userId: this.user.id,
+                subjectId: this.evaluatingStudent.subject.id,
+                teacherId: this.evaluatingStudent.teacher.id
+            }
+            console.log(sendEvaluation);
+            this.evaluationModal = false
+        },
+
         addSubject(){
             this.addSubjectModal = true
-            console.log(this.allStudents);
-            console.log(this.evaluations);
-            console.log(this.subjects);
-            console.log(this.teachers);
         },
         viewSubject(){
             this.viewSubjectModal = true
         },
-        async sort(students, userStudentId){
-            this.myStudents = await students.filter(e => userStudentId.includes(e.id));
-            this.todoStudents = this.myStudents.filter(e => {
-                // finns ingen utvärdering som är veckans => med e.id 
-            })
-            console.log(this.todoStudents);
+
+        async sort(){
+            this.myStudents = await this.sortMyStudents(this.allStudents, this.user.my_students_id)
+            this.myStudents = await this.sortEvaluationsIntoStudent(this.myStudents)
+            this.sortDoneAndTodoStudents()
         },
-        sortEvaluations(student){
-            let myEvals = this.evaluations.filter(e => e.studentid === student.id)
-            myEvals = myevals.filter(e => e.week !== this.date.getWeek())
-            console.log(myEvals);
+        sortMyStudents(students, userStudentId){
+            myStudents =  students.filter(e => userStudentId.includes(e.id));
+            return myStudents
+        },
+
+        sortEvaluationsIntoStudent(students){
+            students.forEach(student => {
+                student.evaluations = this.evaluations.filter(e => student.id === e.studentid )
+                let teacher = this.teachers.filter(f => f.first_name.toLowerCase() === this.user.firstname.toLowerCase() && f.last_name.toLowerCase() === this.user.lastname.toLowerCase())
+                let subject = this.subjects.filter(f => f.teacherid.includes(teacher[0].id))
+                student.subject = {name: subject[0].subject, code: subject[0].course_code, id: subject[0].id}
+                student.teacher = {name: `${teacher[0].first_name} ${teacher[0].last_name}`, id:teacher[0].id}
+            });
+            return students
+        },
+        sortDoneAndTodoStudents(){
+            myStudents.forEach(e => {
+                let findNew = e.evaluations.filter(f => f.week === this.date.getWeek())
+                if(findNew.length === 0){
+                    this.todoStudents.push(e)
+                }
+                else{
+                    this.doneStudents.push(e)
+                }
+            })
         }
+
     },
     computed: {
         isAdmin(){
@@ -113,7 +162,7 @@ const app = Vue.createApp({
                 this.subjects = r.subjects
                 this.teachers = r.teachers
             }))
-            .then(()=> this.sort(this.allStudents, this.user.my_students_id))
+            .then(()=> this.sort())
         }
     }
 })

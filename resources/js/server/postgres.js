@@ -2,6 +2,9 @@ const { Client }=require('pg');
 require('dotenv').config()
 const bcrypt = require('bcrypt');
 const JWT = require('jsonwebtoken')
+require('./week')
+
+date = new Date
 
 const client = new Client({
   user: process.env.PGUSER,
@@ -88,7 +91,9 @@ async function setup(res){
   await client.query(`
     CREATE TABLE IF NOT EXISTS evaluations (
       evaluation character(500) NOT NULL,
+      included_evaluations integer ARRAY,
       week integer NOT NULL,
+      active smallint NOT NULL,
       studentId integer NOT NULL,
       userId integer NOT NULL,
       lessonId integer NOT NULL,
@@ -119,7 +124,7 @@ async function setup(res){
   })
   .then(async()=>{
     const subjects = [
-      {subject:'Design 1', courseCode: 'DESDES01', teacherId: [1]},
+      {subject:'Design 1', coursecloseCode: 'DESDES01', teacherId: [1]},
       {subject:'Digitalt skapande', courseCode: 'DIGDIG01', teacherId: [2]},
       {subject:'Engelska', courseCode: 'ENGENG07', teacherId: [3]},
       {subject:'Gränssnittsdesign', courseCode: 'GRÄGRÄ01', teacherId: [2]},
@@ -173,6 +178,19 @@ async function setup(res){
     })
   })
   .then(async()=>{
+    let evaluation = 'bla bla bla';
+    let weekNow = date.getWeek();
+    let active = 1
+    let sId =  1
+    let uId =  1
+    let lId =  11
+    let tId =  7    
+    await client.query(`
+      INSERT INTO evaluations (evaluation, included_evaluations, week, active, studentid, userid, lessonid, teacherid)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+    `, [evaluation,{},weekNow,active,sId,uId,lId,tId]) 
+  })
+  .then(async()=>{
     const roles = ['Admin', 'User']
     for(i=0; i<roles.length; i++){
       await client.query(`
@@ -217,12 +235,18 @@ async function getInfo(req,res,next){
 
 //get
 
-async function dbTest(){
-  const password = await bcrypt.hash('bob', 8)
+async function saveEval(req,res,next){
+  let evaluation = req.body.student.evaluation;
+  let include = req.body.student.include
+  let weekNow = date.getWeek();
+  let sId = req.body.student.studentId
+  let uId = req.body.student.userId
+  let lId = req.body.student.SubjectId
+  let tId = req.body.student.teacherId    
   await client.query(`
-    INSERT INTO users (firstName, lastName, email, password, roleId, my_students_id)
-    VALUES ('niklas', 'oscarsson', 'niklas.oscarssons@gmail.com', $1, 1, '{1}')
-  `, [password]).catch(err => console.log(err))
+    INSERT INTO evaluations (evaluation, included_evaluations, week, studentid, userid, lessonid, teacherid)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+  `, [evaluation,...include,weekNow,sId,uId,lId,tId]) 
 }
 
-module.exports = {client, setup, getInfo}
+module.exports = {client, setup, getInfo, saveEval}

@@ -82,3 +82,32 @@ h4{
 .save-button{
     text-align: center;
 }
+
+
+/* MODALS */
+
+#evaluate{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.274);
+}
+.evaluation-box{
+    width: fit-content;
+    height: 70%;
+    background-color: white;
+}
+.evaluation-box textarea{
+    resize: none;
+}
+.evaluation-box .button-div{
+    width: 30%;
+    margin: 2% auto;
+    display: flex;
+    justify-content: space-between;
+}

@@ -70,14 +70,14 @@
                 <ul class="student-list">
                     <!-- add input page -->
 
-                    <a href="#" v-for="student in todoStudents">
+                    <a href="#" v-for="student in todoStudents" class="todo-link" @click="evaluate(student)">
                         <li>
                             <div class="student">
                                 <div class="table-div">
-                                    <h4 :title="student.student_mail">{{student.first_name}} {{student.last_name}}</h4>
+                                    <h4 :title="student.student_mail.trim()">{{student.first_name}} {{student.last_name}}</h4>
                                 </div>
                                 <div class="table-div">
-                                    <h4 :title="student.guardian_mail">{{student.guardian}}</h4>
+                                    <h4 :title="student.subject.code">{{student.subject.name}}</h4>
                                 </div>
                             </div>
                         </li>
@@ -170,10 +170,10 @@
                         <li>
                             <div class="student">
                                 <div class="table-div">
-                                    <h4 :title="student.student_mail">{{student.name}}</h4>
+                                    <h4 :title="student.student_mail">{{student.first_name}} {{student.last_name}}</h4>
                                 </div>
                                 <div class="table-div">
-                                    <h4 :title="student.guardian_mail">{{student.guardian}}</h4>
+                                    <h4 :title="student.guardian_mail">{{student.guardian_first_name}} {{student.guardian_last_name}}</h4>
                                 </div>
                             </div>
                         </li>
@@ -181,7 +181,17 @@
                 </ul>
             </div>
         </main>
-    </div>
+        <div id="evaluate" v-if="evaluationModal" @click.self="closeEvaluationModal">
+            <div class="evaluation-box card">
+                <h1>{{evaluatingStudent.first_name}} {{evaluatingStudent.last_name}}</h1>
+                <h3>{{evaluatingStudent.subject.name}}</h3>
+                <textarea name="" id="" cols="150" rows="30" v-model=evaluationText></textarea>
+                <br>
+                <div class="button-div"><button @click="saveEvaluationModal">Save</button> <button @click="closeEvaluationModal" >cancel</button></div>
+                
+            </div>
+        </div>
+    </div> <!-- App div -->
 </body>
 
 </html>
