@@ -2,7 +2,7 @@ const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./resources/js/server/mail');
-const {client, setup, getInfo, dbTest} = require('./resources/js/server/postgres')
+const {client, setup, getInfo, saveEval} = require('./resources/js/server/postgres')
 const {verifyToken, loginAuth, updateCookie, verifyUser} = require('./resources/js/server/serverFunctions')
 require('dotenv').config();
 require('./resources/js/server/week')
@@ -17,7 +17,7 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-//setup()
+setup()
 
 
 //GET
@@ -65,7 +65,7 @@ app.get('/profile/webmin', verifyToken, (req,res,next)=>{
 
 
 //POST
-app.post('/setSubject',async (req,res)=>{
+app.post('/setSubject', verifyToken, async (req,res)=>{
   let date = new Date
   let thisWeek = date.getWeek()
   await client.query(`
@@ -79,11 +79,13 @@ app.post('/setSubject',async (req,res)=>{
   })
 })
 
-app.post('/getInfo', getInfo)
+app.post('/getInfo', verifyToken, getInfo)
 
 app.post('/profile/login', loginAuth)
 
-app.post('/userInfo', verifyUser)
+app.post('/userInfo', verifyToken, verifyUser)
+
+app.post('/evaluate', verifyToken, saveEval)
 
 
 app.listen(process.env.SERVERPORT || 3000, (error)=>{

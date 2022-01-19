@@ -56,7 +56,7 @@ async function setToken(user){
   return token
 }
 async function loginAuth(req, res, next){
-  const users = await getUser(req.body.username)
+  const users = await getUser(req.body.username.toLowerCase())
   const user = await checkEncryption(users, req.body.password)
   if(user == undefined){
     console.log(`Login failed for ${capitalize(req.body.username)}`);

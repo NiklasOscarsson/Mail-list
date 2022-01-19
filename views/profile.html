@@ -166,7 +166,7 @@
                 <ul class="student-list">
                     <!-- add input page -->
 
-                    <a href="#" v-for="student in doneStudents">
+                    <a href="#students-done" v-for="student in doneStudents">
                         <li>
                             <div class="student">
                                 <div class="table-div">
@@ -188,7 +188,7 @@
                 <textarea name="" id="" cols="150" rows="30" v-model=evaluationText></textarea>
                 <br>
                 <div class="button-div"><button @click="saveEvaluationModal">Save</button> <button @click="closeEvaluationModal" >cancel</button></div>
-                
+                <div id="evalWarning" v-if="this.evalWarning"><h2>Kan inte skicka tom utvärdering</h2></div>
             </div>
         </div>
     </div> <!-- App div -->

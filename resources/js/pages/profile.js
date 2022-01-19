@@ -18,6 +18,7 @@ const app = Vue.createApp({
             evaluatingStudent: {},
             evaluationText: '',
             includedEvaluations: [],
+            evalWarning: false 
         }
     },
     methods: {
@@ -45,20 +46,28 @@ const app = Vue.createApp({
             this.evaluationModal = false
         },
         saveEvaluationModal(){
-            if(this.evaluationText = ''){
+            if(this.evaluationText === ''){
                 this.evalWarning = true /* MAKE A WARNING + SEND SHIT */
                 setTimeout(()=>{this.evalWarning = false}, 5000)
+                return false
             }
-            const sendEvaluation = {
+            const student = {
                 evaluation: this.evaluationText,
                 include: this.includedEvaluations,
                 studentId: this.evaluatingStudent.id,
-                userId: this.user.id,
                 subjectId: this.evaluatingStudent.subject.id,
                 teacherId: this.evaluatingStudent.teacher.id
             }
-            console.log(sendEvaluation);
+            fetch('/evaluate', {
+                headers: {
+                    'content-type':'application/json'
+                },
+                body: JSON.stringify(student),
+                credentials: 'same-origin',
+                method: 'POST'
+            })
             this.evaluationModal = false
+            this.evaluationText = ''
         },
 
         addSubject(){

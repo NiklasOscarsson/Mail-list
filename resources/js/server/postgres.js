@@ -91,7 +91,6 @@ async function setup(res){
   await client.query(`
     CREATE TABLE IF NOT EXISTS evaluations (
       evaluation character(500) NOT NULL,
-      included_evaluations integer ARRAY,
       week integer NOT NULL,
       active smallint NOT NULL,
       studentId integer NOT NULL,
@@ -124,7 +123,7 @@ async function setup(res){
   })
   .then(async()=>{
     const subjects = [
-      {subject:'Design 1', coursecloseCode: 'DESDES01', teacherId: [1]},
+      {subject:'Design 1', courseCode: 'DESDES01', teacherId: [1]},
       {subject:'Digitalt skapande', courseCode: 'DIGDIG01', teacherId: [2]},
       {subject:'Engelska', courseCode: 'ENGENG07', teacherId: [3]},
       {subject:'Gränssnittsdesign', courseCode: 'GRÄGRÄ01', teacherId: [2]},
@@ -186,9 +185,9 @@ async function setup(res){
     let lId =  11
     let tId =  7    
     await client.query(`
-      INSERT INTO evaluations (evaluation, included_evaluations, week, active, studentid, userid, lessonid, teacherid)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-    `, [evaluation,{},weekNow,active,sId,uId,lId,tId]) 
+      INSERT INTO evaluations (evaluation, week, active, studentid, userid, lessonid, teacherid)
+      VALUES ($1,$2,$3,$4,$5,$6,$7)
+    `, [evaluation,weekNow,active,sId,uId,lId,tId]) 
   })
   .then(async()=>{
     const roles = ['Admin', 'User']
@@ -199,8 +198,12 @@ async function setup(res){
       `, [roles[i]]) 
     }
   })
-  .then(()=>{
-    dbTest()
+  .then(async()=>{
+    const pass = await bcrypt.hash('bob', 8)
+    await client.query(`
+        INSERT INTO users (firstname, lastname, email, password, roleid, my_students_id)
+        VALUES ('niklas', 'oscarsson', 'niklas.oscarssons@gmail.com', $1, 1, '{1}')
+      `, [pass]) 
   })
   .then(()=>{
     console.log('Setup successful');
@@ -236,17 +239,30 @@ async function getInfo(req,res,next){
 //get
 
 async function saveEval(req,res,next){
-  let evaluation = req.body.student.evaluation;
-  let include = req.body.student.include
+  let user = JWT.decode(req.cookies.token)
+  let evaluation = req.body.evaluation;
+  let include = req.body.include
   let weekNow = date.getWeek();
-  let sId = req.body.student.studentId
-  let uId = req.body.student.userId
-  let lId = req.body.student.SubjectId
-  let tId = req.body.student.teacherId    
-  await client.query(`
-    INSERT INTO evaluations (evaluation, included_evaluations, week, studentid, userid, lessonid, teacherid)
+  let sId = req.body.studentId
+  let uId = user.user
+  let lId = req.body.subjectId
+  let tId = req.body.teacherId   
+   await client.query(`
+    INSERT INTO evaluations (evaluation, active, week, studentid, userid, lessonid, teacherid)
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
-  `, [evaluation,...include,weekNow,sId,uId,lId,tId]) 
+  `, [evaluation,1,weekNow,sId,uId,lId,tId])
+  .then(async()=>{
+    let include = req.body.include
+    await client.query(`
+    UPDATE evaluations (active)
+    SET ($2)
+    WHERE id IN $1
+  `, [include, 1])
+  }).then(
+    res.send('Upload completed')
+  ).catch(
+    res.send('Upload failed')
+  )
 }
 
 module.exports = {client, setup, getInfo, saveEval}
