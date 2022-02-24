@@ -45,8 +45,8 @@ async function setup(res) {
   })
   await client.query(`
     CREATE TABLE IF NOT EXISTS guardians (
-      first_name character(20) NOT NULL,
-      last_name character(20) NOT NULL,
+      guardian_first_name character(20) NOT NULL,
+      guardian_last_name character(20) NOT NULL,
       guardian_mail character(50),
       id serial NOT NULL,
       PRIMARY KEY (id)
@@ -69,6 +69,18 @@ async function setup(res) {
       return false
     })
   await client.query(`
+    CREATE TABLE IF NOT EXISTS all_subjects (
+      subject_name character(40) NOT NULL,
+      course_code character(8) NOT NULL,
+      id serial NOT NULL,
+      PRIMARY KEY (id)
+    )`
+  )
+    .catch(err => {
+      console.log('error setting up all_subject db: ' + err);
+      return false
+    })
+  await client.query(`
     CREATE TABLE IF NOT EXISTS teachers (
       first_name character(20) NOT NULL,
       last_name character(20) NOT NULL,
@@ -88,10 +100,10 @@ async function setup(res) {
       PRIMARY KEY (id)
     )`
   )
-    .catch(err => {
-      console.log('error setting up roles db: ' + err);
-      return false
-    })
+  .catch(err => {
+    console.log('error setting up roles db: ' + err);
+    return false
+  })
   await client.query(`
     CREATE TABLE IF NOT EXISTS evaluations (
       evaluation character(500) NOT NULL,
@@ -100,10 +112,10 @@ async function setup(res) {
       PRIMARY KEY (id)
     )`
   )
-    .catch(err => {
-      console.log('error setting up evaluation db: ' + err);
-      return false
-    })
+  .catch(err => {
+    console.log('error setting up evaluation db: ' + err);
+    return false
+  })
   complete = await client.query(`
     CREATE TABLE IF NOT EXISTS timers (
       remindDay integer NOT NULL,
@@ -171,14 +183,26 @@ async function setup(res) {
   `)
   .catch((err)=>{console.log('error setting up teacher-subject-eval db');})
   await client.query(`
+    CREATE TABLE IF NOT EXISTS teacher_allsubjects (
+      teacher_id integer NOT NULL,
+      subject_id integer NOT NULL
+    )
+  `)
+  .catch((err)=>{console.log('error setting up teacher_allsubjects db');})
+  await client.query(`
     CREATE TABLE IF NOT EXISTS eval_student_user (
-      teacher_subject_eval_id integer NOT NULL,
-      student_guardian_id integer NOT NULL,
+      evaluation_id integer NOT NULL,
+      student_id integer NOT NULL,
       user_id integer NOT NULL
     )
   `)
   .catch((err)=>{console.log('error setting up user-student-eval db');})
-
+  await client.query(`
+    CREATE TABLE IF NOT EXISTS student_subject (
+      student_id integer NOT NULL,
+      subject_id integer NOT NULL
+    )
+  `)
 
 
   // FILL TABLES
@@ -237,7 +261,7 @@ async function setup(res) {
       email: 'något@klara.se',
     }
     await client.query(`
-    INSERT INTO guardians (first_name, last_name, guardian_mail)
+    INSERT INTO guardians (guardian_first_name, guardian_last_name, guardian_mail)
     VALUES ($1, $2, $3)
   `, [vh.fNamn, vh.eNamn, vh.email])
   })
@@ -248,7 +272,7 @@ async function setup(res) {
       email: 'något@norge.se',
     }
     await client.query(`
-    INSERT INTO guardians (first_name, last_name, guardian_mail)
+    INSERT INTO guardians (guardian_first_name, guardian_last_name, guardian_mail)
     VALUES ($1, $2, $3)
   `, [vh.fNamn, vh.eNamn, vh.email])
   })
@@ -305,6 +329,28 @@ async function setup(res) {
     })
   })
   .then(async () => {
+    const subjects = [
+      { subject: 'Design 1', courseCode: 'DESDES01' },
+      { subject: 'Digitalt skapande', courseCode: 'DIGDIG01' },
+      { subject: 'Engelska', courseCode: 'ENGENG07' },
+      { subject: 'Gränssnittsdesign', courseCode: 'GRÄGRÄ01' },
+      { subject: 'Historia', courseCode: 'HISHIS01' },
+      { subject: 'Idrott', courseCode: 'IDRIDR01' },
+      { subject: 'Konstarterna och Samhället', courseCode: 'KOSKOS01' },
+      { subject: 'Medieproduktion', courseCode: 'MEPMEP01' },
+      { subject: 'Religion', courseCode: 'RELREL01' },
+      { subject: 'Svenska', courseCode: 'SVESVE02' },
+      { subject: 'Webbutveckling', courseCode: 'WEUWEB01' },
+    ]
+    subjects.forEach(async e => {
+      await client.query(`
+      INSERT INTO all_subjects 
+      (subject_name, course_code)
+      VALUES ($1, $2)
+      `, [e.subject, e.courseCode])
+    })
+  })
+  .then(async () => {
     let evaluation = 'bla bla bla';
     let weekNow = date.getWeek();
     await client.query(`
@@ -313,14 +359,44 @@ async function setup(res) {
   `, [evaluation, weekNow])
   })
   .then(async () => {
+    for(let i=1; i<12; i++){
+      await client.query(`
+        INSERT INTO student_subject (student_id, subject_id)
+        VALUES (1, $1)
+      `, [i])
+    }
+  })
+  .then(async () => {
     await client.query(`
       INSERT INTO teacher_subject_eval (teacher_id, subject_id, evaluation_id)
       VALUES (7, 11, 1)
     `)
   })
   .then(async () => {
+    teacherSubject = [
+      [1,1],
+      [2,4],
+      [2,7],
+      [2,8],
+      [3,3],
+      [4,5],
+      [4,9],
+      [5,2],
+      [5,6],
+      [6,10],
+      [7,11],
+    ]
+    teacherSubject.forEach(async e =>  {
+      await client.query(`
+        INSERT INTO teacher_allsubjects ( teacher_id, subject_id )
+        VALUES ($1, $2)
+      `, [e[0], e[1]])
+    })
+    
+  })
+  .then(async () => {
     await client.query(`
-      INSERT INTO eval_student_user (teacher_subject_eval_id, student_guardian_id, user_id)
+      INSERT INTO eval_student_user (evaluation_id, student_id, user_id)
       VALUES (1,1,1)
     `)
   })

@@ -10,20 +10,12 @@
       </div>
       <hr />
       <div class="guardian-info">
-        <div>
-          <h2>Målsman 1:</h2>
+        <div v-for="guardian, i in viewSelectedStudent.guardians" :key="i">
+          <h2>Målsman {{i+1}}:</h2>
           <h3>
-            {{ viewSelectedStudent.guardian1_first_name }}
-            {{ viewSelectedStudent.guardian1_last_name }} <br />
-            {{ viewSelectedStudent.guardian1_mail }}
-          </h3>
-        </div>
-        <div v-if="viewSelectedStudent.guardian2_first_name">
-          <h2>Målsman 2:</h2>
-          <h3>
-            {{ viewSelectedStudent.guardian2_first_name }}
-            {{ viewSelectedStudent.guardian2_last_name }} <br />
-            {{ viewSelectedStudent.guardian2_mail }}
+            {{ guardian.firstName }}
+            {{ guardian.lastName }} <br />
+            {{ guardian.mail }}
           </h3>
         </div>
       </div>
@@ -66,6 +58,14 @@ export default {
   height: 45vh;
   width: 50vw;
   background-color: white;
+  text-align: center;
+}
+.guardian-info{
+  display:flex;
+  justify-content: space-evenly;
+}
+.view-active-evals{
+  margin-top: 10%;
 }
 </style>
 

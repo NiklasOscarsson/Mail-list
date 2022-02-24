@@ -3,7 +3,7 @@ const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./server/mailer/mail');
 const {client, setup, getUserInfo, saveEval} = require('./server/db/init')
-const {verifyToken, loginAuth, updateCookie, verifyUser} = require('./server/serverFunctions/init')
+const {verifyToken, loginAuth, updateCookie, verifyUser, getAll} = require('./server/serverFunctions/init')
 require('dotenv').config();
 require('./server/serverFunctions/week')
 const app = exp();
@@ -79,7 +79,7 @@ app.post('/setSubject', verifyToken, async (req,res)=>{
   })
 })
 
-app.post('/getInfo', /* verifyToken ,*/ getUserInfo)
+app.post('/getInfo', /* verifyToken ,*/ getAll)
 
 //app.post('/profile/login', loginAuth)
 

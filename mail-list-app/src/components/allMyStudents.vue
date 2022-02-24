@@ -21,20 +21,11 @@
               </h4>
             </div>
             <div class="table-div">
-              <div v-if="!student.guardian2_first_name">
-                <h4 :title="student.guardian_mail">
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
+              <div v-for="guardian in student.guardians" :key="guardian.first_name">
+                <h4 :title="guardian.mail">
+                  {{ guardian.firstName }}
+                  {{ guardian.lastName }}
                 </h4>
-              </div>
-              <div v-else>
-                <h5 :title="student.guardian_mail">
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
-                  <br />
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
-                </h5>
               </div>
             </div>
           </div>
@@ -83,5 +74,15 @@ export default {
 }
 </script>
 <style scoped>
-
+  .table-div{
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .student{
+    background-color: white;
+  }
+  .student:nth-child(2n){
+    background-color: rgba(128, 128, 128, 0.568);
+  }
 </style>

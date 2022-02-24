@@ -2,20 +2,28 @@ const {client} = require('./postgres')
 const JWT = require('jsonwebtoken')
 const bcrypt =require('bcrypt')
 
-async function getUserInfo(req, res, next) {
-  let user = await getUser('niklas.oscarssons@gmail.com', 'bob')
+async function getAllInfo(req, res, next) {
+  const user = await getUser('niklas.oscarssons@gmail.com', 'bob')
   user.role = await getUserRole(user.id)
+  const allStudents = await getAllStudents()
+  const allGuardians = await getAllGuardians()
+  const allSubjects = await getAllSubjects()
+  const allTeachers = await getAllTeachers()
+  const studentSubjects = await getStudentSubjects()
+  const evals = await getEvaluations()
+  const connect = await getConnectorTable(user.id)
 
-  console.log(user);
-  getAllStudents()
-  //const user = 1/* JWT.decode(req.cookies.token).user */
-  //let info = await getFullInfo(user)
-  //let info2 = await getMyStuff(user)
-  
-  //console.log(info);
-  //let sortedInfo = studentSorter(info)
-
-  res.json(user)
+  let info = {
+    user: user,
+    allStudents: allStudents,
+    allGuardians: allGuardians,
+    allSubjects: allSubjects,
+    allTeachers: allTeachers,
+    studentSubjects: studentSubjects,
+    rawEvaluations: evals,
+    connector: connect
+  }
+  return info
 }
 
 async function getUser(email, password){
@@ -26,18 +34,22 @@ async function getUser(email, password){
     WHERE email = $1
   `, [email])
   .then(async (r)=>{
-    if(bcrypt.compareSync(password, r.rows[0].password.trim())){
+    if(r.rows.length > 0 && bcrypt.compareSync(password, r.rows[0].password.trim())){
       const user = await client.query(`
-        SELECT first_name, last_name, email, id FROM users
-        WHERE id = $1
+        SELECT users.first_name, users.last_name, users.email, teachers.id AS teacher_id, users.id 
+        FROM users
+        JOIN user_teacher ON users.id = user_teacher.user_id
+        JOIN teachers ON user_teacher.teacher_id = teachers.id
+        WHERE users.id = $1
       `,[r.rows[0].user_id])
+      .catch(err => console.log(err))
       return user.rows[0]
     }
   })
   return user
 }
 async function getUserRole(id){
-  const role = await client.query(`
+  return await client.query(`
     SELECT roles.role FROM users
     INNER JOIN user_role
     ON user_role.user_id = users.id
@@ -48,13 +60,19 @@ async function getUserRole(id){
   .then((r)=>{
       return r.rows[0].role
   })
-  return role
 }
 async function getAllStudents(){
-  client.query(`
-    SELECT 
-    students.first_name, students.last_name, students.student_mail,
-    guardians.first_name, guardians.last_name, guardians.guardian_mail
+  return await client.query(`
+    SELECT *
+    FROM students
+  `
+  )
+  .then(r => {return r.rows})
+
+}
+async function getAllGuardians(){
+  return await client.query(`
+    SELECT students.id, guardians.guardian_first_name, guardians.guardian_last_name, guardians.guardian_mail
     FROM students
     INNER JOIN student_guardian
     ON students.id = student_guardian.student_id
@@ -62,26 +80,63 @@ async function getAllStudents(){
     ON student_guardian.guardian1_id = students.id
     OR student_guardian.guardian2_id = students.id
   `
-  , (err, data)=>{
-    console.log(data.rows);
-    // console.log(err);
-  })
+  )
+  .then(r => {return r.rows})
 }
 
+async function getAllSubjects(){
+  return await client.query(`
+    SELECT all_subjects.course_code, all_subjects.subject_name, teacher_allsubjects.teacher_id
+    FROM teacher_allsubjects
+    JOIN all_subjects ON teacher_allsubjects.subject_id = all_subjects.id
 
-async function getFullInfo(email){
-  let info = {}
-  await client.query(`
-    SELECT 
-    FROM 
   `)
-
-  
-  return info
+  .then(r => {return r.rows})
 }
 
-async function getMyStuff(user){
-  
+async function getAllTeachers(){
+  return await client.query(`
+    SELECT *
+    FROM teachers
+  `)
+  .then(r => {return r.rows})
 }
 
-module.exports = {getUserInfo, getUser}
+async function getStudentSubjects(){
+  return await client.query(`
+    SELECT course_code, subject_name, student_subject.student_id
+    FROM subjects
+    INNER JOIN student_subject
+    ON student_subject.subject_id = subjects.id
+  `)
+  .then(r => {return r.rows})
+}
+
+async function getConnectorTable(userId){
+  return await client.query(`
+    SELECT *
+    FROM eval_student_user
+    WHERE user_id = $1
+  `, [userId])
+  .then(r => {return r.rows})
+}
+
+
+async function getEvaluations(){
+  return await client.query(`
+    SELECT 
+    evaluations.evaluation, evaluations.week, evaluations.id,
+    teachers.first_name, teachers.last_name,
+    subjects.subject_name, subjects.course_code
+    FROM teacher_subject_eval
+    JOIN evaluations
+    ON evaluations.id = evaluation_id
+    JOIN teachers
+    ON teachers.id = teacher_id
+    JOIN subjects
+    ON subjects.id = subject_id
+  `)
+  .then(r => {return r.rows})
+}
+
+module.exports = {getAllInfo, getUser, getAllStudents}

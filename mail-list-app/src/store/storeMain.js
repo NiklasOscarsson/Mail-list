@@ -15,13 +15,10 @@ const store = createStore({
     },
     mutations:{
         setup(state, payload){
+            console.log(payload);
             state.user = payload.user
             state.myStudents = payload.myStudents
-            state.myEvaluations = payload.myEvaluations
-            state.allStudents = payload.all.students
-            state.allTeachers = payload.all.teachers
-            
-            //mySubjects
+            state.allStudents = payload.allStudents
         },
         setSelectedStudent(state, payload){
             state.selectedStudent = payload
@@ -45,15 +42,10 @@ const store = createStore({
             context.commit('setSelectedStudent', payload)
         },
         setEvaluationAction(context, payload){
-
-
-
-
             if(payload == 0){
                 console.log(context);
             }
             console.log(payload);
-            
         },
     },
     getters: {
@@ -64,19 +56,8 @@ const store = createStore({
             return state.selectedStudent
         },
         getTodoStudents(state){
-            let students = state.myStudents.filter(e => {
-                let re;
-                e.studentSubjects.forEach(el => {
-                    if(el.evaluation.length > 0){
-                        re = el.evaluation.filter(ele => ele.active === 0)
-                    }
-                });
-                console.log(re);
-                if(re.length !== 0) return true
-                return false
-            })
-            console.log(state.mySubjects);
-            return students
+            
+            return state.myStudents
         },
     }
 })
