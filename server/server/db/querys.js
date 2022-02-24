@@ -52,12 +52,19 @@ async function getUserRole(id){
 }
 async function getAllStudents(){
   client.query(`
-    SELECT *
+    SELECT 
+    students.first_name, students.last_name, students.student_mail,
+    guardians.first_name, guardians.last_name, guardians.guardian_mail
     FROM students
+    INNER JOIN student_guardian
+    ON students.id = student_guardian.student_id
+    INNER JOIN guardians
+    ON student_guardian.guardian1_id = students.id
+    OR student_guardian.guardian2_id = students.id
   `
   , (err, data)=>{
-    console.log(data.rows[0]);
-    //FORTSÄTT HÄR
+    console.log(data.rows);
+    // console.log(err);
   })
 }
 
