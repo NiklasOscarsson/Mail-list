@@ -15,66 +15,57 @@
 
       <a
         href="#students-done"
-        v-for="student in doneStudents"
-        :key="student.student_mail"
-        @click="viewEvaluation(student)"
+        v-for="done in doneStudents"
+        :key="done.student.student_mail.trim()"
+        @click="viewEvaluation(done)"
       >
         <li>
           <div class="student">
             <div class="table-div">
-              <h4 :title="student.student_mail">
-                {{ student.first_name }} {{ student.last_name }}
+              <h4 :title="done.student.student_mail">
+                {{ done.student.first_name }} {{ done.student.last_name }}
               </h4>
             </div>
             <div class="table-div">
-              <div v-if="!student.guardian2_first_name">
-                <h4 :title="student.guardian_mail">
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
-                </h4>
-              </div>
-              <div v-else>
-                <h5 :title="student.guardian_mail">
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
-                  <br />
-                  {{ student.guardian1_first_name }}
-                  {{ student.guardian1_last_name }}
-                </h5>
-              </div>
+              <h4>{{ done.subject_name }}</h4>
             </div>
           </div>
         </li>
       </a>
     </ul>
+    <viewEvaluationModal v-if="evaluationModal" @close='closeViewEvaluation'/>
   </div>
 </template>
 
 <script>
+import {mapGetters, mapActions} from 'vuex'
+import viewEvaluationModal from './modals/viewEvaluationModal.vue'
 export default {
-    data(){
-        return {
-            doneStudents: {},
-            viewSelectedStudent:{},
-            viewStudentModal: false,
-        }
+  components:{viewEvaluationModal},
+  data(){
+      return {
+        date: new Date,
+        evaluationModal: false,
+      }
+  },
+  methods:{
+    ...mapActions(['setSelectedStudentAction']),
+    ...mapGetters(['getSelectedStudent', 'getDoneStudents', 'getWeek']),
+    viewEvaluation(student){
+      this.setSelectedStudentAction(student)
+      this.evaluationModal = true
     },
-    methods:{
-        viewEvaluation(student){
-            if(this.evaluatingStudent !== student){
-                this.evaluationText = student.evaluations.find(e => e.week === this.date.getWeek()).evaluation
-                this.evaluatingStudent = student
-            }
-            this.evaluatingStudent.evaluations.forEach(e => {
-                if(e.active === 1){
-                    this.includedEvaluations.push(e.id)
-                }
-            })
-            this.evaluationModal = true
-        },
-        closeViewEvaluation(){
-            this.evaluationModal = false
-        }
+    closeViewEvaluation(){
+        this.evaluationModal = false
     }
+  },
+  computed:{
+    SelectedStudent(){
+      return this.getSelectedStudent()
+    },
+    doneStudents(){
+      return this.getDoneStudents()
+    }
+  }
 }
 </script>

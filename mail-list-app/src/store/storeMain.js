@@ -1,28 +1,40 @@
 import {createStore} from 'vuex'
+require('../assets/js/week')
 
 const store = createStore({
     state(){
         return {
             selectedStudent: {},
             allStudents: [],
+            allSubjects: [],
             allTeachers: [],
             myStudents: [],
-            mySubjects: [],
-            myEvaluations: [],
-            user: '',
+            addedStudents: [],
+            todo: [],
+            done: [],
+            includedEvals: [],
+            user: {},
             date: new Date,
         }
     },
     mutations:{
         setup(state, payload){
-            console.log(payload);
             state.user = payload.user
             state.myStudents = payload.myStudents
+            state.addedStudents = payload.addedStudents
             state.allStudents = payload.allStudents
+            state.allSubjects = payload.allSubjects
+            state.allTeachers = payload.allTeachers
+
+            state.addedStudents.forEach(e => {
+                let check = e.evaluations.filter(i => i.active === 1)
+                if(check.length > 0){state.done.push(e)}
+                else{state.todo.push(e)}
+            });
         },
         setSelectedStudent(state, payload){
             state.selectedStudent = payload
-        }
+        },
     },
     actions: {
         setup(context){
@@ -41,11 +53,19 @@ const store = createStore({
         setSelectedStudentAction(context, payload){
             context.commit('setSelectedStudent', payload)
         },
-        setEvaluationAction(context, payload){
-            if(payload == 0){
-                console.log(context);
-            }
-            console.log(payload);
+        async setEvaluationAction(context, payload){
+            if(payload.length === 0) return
+            await fetch('http://127.0.0.1:80/evaluate',{  //<-----------------Byt Vid Publicering
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'content-type':'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                context.dispatch('setup')
+            })
         },
     },
     getters: {
@@ -56,10 +76,26 @@ const store = createStore({
             return state.selectedStudent
         },
         getTodoStudents(state){
-            
-            return state.myStudents
+            return state.todo
         },
+        getDoneStudents(state){
+            return state.done
+        },
+        getIncludedEvals(state){
+            return state.includedEvals
+        },
+        getUserId(state){
+            return state.user.id
+        },
+        getWeek(state){
+            return state.date.getWeek()
+        }
     }
 })
+
+// function todoOrDone(){
+
+// }
+
 
 export default store

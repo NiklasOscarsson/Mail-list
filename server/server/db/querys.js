@@ -104,10 +104,12 @@ async function getAllTeachers(){
 
 async function getStudentSubjects(){
   return await client.query(`
-    SELECT course_code, subject_name, student_subject.student_id
+    SELECT course_code, subject_name, student_subject.student_id, teacher_allsubjects.teacher_id
     FROM subjects
     INNER JOIN student_subject
     ON student_subject.subject_id = subjects.id
+    JOIN teacher_allsubjects 
+    ON teacher_allsubjects.subject_id = subjects.id
   `)
   .then(r => {return r.rows})
 }
@@ -125,7 +127,7 @@ async function getConnectorTable(userId){
 async function getEvaluations(){
   return await client.query(`
     SELECT 
-    evaluations.evaluation, evaluations.week, evaluations.id,
+    evaluations.evaluation, evaluations.week, evaluations.id, evaluations.active,
     teachers.first_name, teachers.last_name,
     subjects.subject_name, subjects.course_code
     FROM teacher_subject_eval

@@ -15,22 +15,22 @@
 
       <a
         href="#"
-        v-for="student in todoStudents"
+        v-for="todo in todoStudents"
         class="todo-link"
-        :key="student.student_mail"
-        @click="evaluate(student)"
+        :key="todo.student.student_mail"
+        @click="evaluate(todo)"
       >
         <li>
           <div class="student">
             <div class="table-div">
-              <h4 :title="student.student_mail.trim()">
-                {{ student.first_name }} {{ student.last_name }}
+              <h4 :title="todo.student.student_mail.trim()">
+                {{ todo.student.first_name }} {{ todo.student.last_name }}
               </h4>
             </div>
             <div class="table-div">
-              <div v-if="!student.guardian2_first_name">
+              <div>
                 <h4>
-                  {{ subject }}
+                  {{ todo.subject_name }}
                 </h4>
               </div>
             </div>

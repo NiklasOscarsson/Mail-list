@@ -21,11 +21,13 @@
               </h4>
             </div>
             <div class="table-div">
-              <div v-for="guardian in student.guardians" :key="guardian.first_name">
-                <h4 :title="guardian.mail">
-                  {{ guardian.firstName }}
-                  {{ guardian.lastName }}
-                </h4>
+              <div>
+                <div v-for="guardian in student.guardians" :key="guardian.first_name">
+                  <h4 :title="guardian.mail">
+                    {{ guardian.firstName }}
+                    {{ guardian.lastName }}
+                  </h4>
+                </div>
               </div>
             </div>
           </div>

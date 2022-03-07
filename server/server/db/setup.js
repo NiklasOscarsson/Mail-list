@@ -108,6 +108,7 @@ async function setup(res) {
     CREATE TABLE IF NOT EXISTS evaluations (
       evaluation character(500) NOT NULL,
       week integer NOT NULL,
+      active integer NOT NULL,
       id serial NOT NULL,
       PRIMARY KEY (id)
     )`
@@ -354,8 +355,8 @@ async function setup(res) {
     let evaluation = 'bla bla bla';
     let weekNow = date.getWeek();
     await client.query(`
-    INSERT INTO evaluations (evaluation, week)
-    VALUES ($1,$2)
+    INSERT INTO evaluations (evaluation, week, active)
+    VALUES ($1,$2, 0)
   `, [evaluation, weekNow])
   })
   .then(async () => {

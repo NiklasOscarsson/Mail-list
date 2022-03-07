@@ -85,7 +85,7 @@ app.post('/getInfo', /* verifyToken ,*/ getAll)
 
 //app.post('/userInfo', verifyToken, verifyUser)
 
-//app.post('/evaluate', verifyToken, saveEval)
+app.post('/evaluate', /* verifyToken, */ saveEval)
 
 
 app.listen(process.env.SERVERPORT || 3000, (error)=>{

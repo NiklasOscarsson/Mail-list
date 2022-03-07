@@ -7,9 +7,9 @@
       <div class="studentText">
         <div>
           <h1>
-            {{ evaluatingStudent.first_name }} {{ evaluatingStudent.last_name }}
+            {{ evaluatingStudent.student.first_name }} {{ evaluatingStudent.student.last_name }}
           </h1>
-          <h3>{{ subject }}</h3>
+          <h3>{{ evaluatingStudent.subject_name }}</h3>
         </div>
         <button id="include" @click="includeEval">
           <p>inkludera tidigare utverderingar</p>
@@ -38,14 +38,16 @@ export default {
         }
     },
     methods:{
-        ...mapGetters(['getSelectedStudent']),
+        ...mapGetters(['getSelectedStudent', 'getIncludedEvals', 'getUserId']),
         ...mapActions(['setEvaluationAction']),
         saveEvaluationModal(){
             if(this.evaluationText === ''){
                 this.evalWarning = true
-                return
+                setTimeout(()=>{
+                  this.evalWarning = false
+                }, 3000)
             }else{
-                this.setEvaluationAction([this.evaluationText, ])
+                this.setEvaluationAction([this.evaluationText, this.getSelectedStudent(), this.getUserId(), this.getIncludedEvals()])
             }
         },
         closeEvaluationModal(){
@@ -63,3 +65,42 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.evaluation-box{
+  background-color: white;
+}
+.studentText{
+  width: 90%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+}
+#include{
+  height: 80%;
+  align-self: center;
+}
+textarea{
+  resize: none;
+}
+.button-div{
+  height: 4vh;
+  width: 80%;
+  margin: auto;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+#evalWarning{
+  position: absolute;
+  top: 50vh;
+  left: 50%;
+  transform: translateX(-50%);
+  color: red;
+  text-shadow: 
+    -1px -1px 0 #000,  
+     1px -1px 0 #000,
+    -1px 1px 0 #000,
+     1px 1px 0 #000;
+}
+</style>

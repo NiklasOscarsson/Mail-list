@@ -27,13 +27,32 @@ function sorter(info) {
     //BUILD MY STUDENTS
     info.myStudents=[]
     info.connector.forEach(e => {
+        let checkDouble = info.myStudents.filter(i => i.id === e.student_id)
+        if(checkDouble.length !== 0) return //<--------- GET ALL EVALS
         let myStudent = info.allStudents.filter(j => e.student_id === j.id)[0]
         myStudent = cutConnections(myStudent)
         myStudent.evaluations = info.rawEvaluations.filter(j => e.evaluation_id===j.id)
         info.myStudents.push(myStudent)
     })
 
-    //BUILD ADDED STUDENTS <------------------------
+    //BUILD ADDED STUDENTS
+    let addedStudents = info.studentSubjects.filter(e => e.teacher_id === info.user.teacher_id)
+    addedStudents = cutConnections(addedStudents)
+    addedStudents.forEach(e =>{
+        e.student = info.allStudents.filter(i => i.id === e.student_id )[0]
+    })
+    addedStudents = cutConnections(addedStudents)
+    addedStudents.forEach(e=>{
+        delete e.student.subjects
+    })
+    info.connector.forEach(e=>{
+        addedStudents.forEach(j =>{
+            j.evaluations = info.rawEvaluations.filter(i => e.student_id === j.student.id && i.id === e.evaluation_id)
+        })
+    })
+    addedStudents = cutConnections(addedStudents)
+    info.addedStudents = addedStudents //ADD EVALS FOR SUBJECTS
+    
 
 
     //SET TEACHING ON USER
