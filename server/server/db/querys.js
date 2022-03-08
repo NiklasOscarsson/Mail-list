@@ -25,7 +25,6 @@ async function getAllInfo(req, res, next) {
   }
   return info
 }
-
 async function getUser(email, password){
   const user = await client.query(`
     SELECT login.user_id, password FROM userlogin
@@ -83,7 +82,6 @@ async function getAllGuardians(){
   )
   .then(r => {return r.rows})
 }
-
 async function getAllSubjects(){
   return await client.query(`
     SELECT all_subjects.course_code, all_subjects.subject_name, teacher_allsubjects.teacher_id
@@ -93,7 +91,6 @@ async function getAllSubjects(){
   `)
   .then(r => {return r.rows})
 }
-
 async function getAllTeachers(){
   return await client.query(`
     SELECT *
@@ -101,7 +98,6 @@ async function getAllTeachers(){
   `)
   .then(r => {return r.rows})
 }
-
 async function getStudentSubjects(){
   return await client.query(`
     SELECT course_code, subject_name, student_subject.student_id, teacher_allsubjects.teacher_id
@@ -113,7 +109,6 @@ async function getStudentSubjects(){
   `)
   .then(r => {return r.rows})
 }
-
 async function getConnectorTable(userId){
   return await client.query(`
     SELECT *
@@ -122,8 +117,6 @@ async function getConnectorTable(userId){
   `, [userId])
   .then(r => {return r.rows})
 }
-
-
 async function getEvaluations(){
   return await client.query(`
     SELECT 

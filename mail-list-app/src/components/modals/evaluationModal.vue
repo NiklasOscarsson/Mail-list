@@ -1,89 +1,115 @@
 <template>
-  <div
-    class="backdrop"
-    @click.self="closeEvaluationModal"
-  >
-    <div class="evaluation-box card">
-      <div class="studentText">
-        <div>
-          <h1>
-            {{ evaluatingStudent.student.first_name }} {{ evaluatingStudent.student.last_name }}
-          </h1>
-          <h3>{{ evaluatingStudent.subject_name }}</h3>
+  <div>
+    <div class="backdrop" @click.self="closeEvaluationModal">
+      <div class="evaluation-box card">
+        <div class="studentText">
+          <div>
+            <h1>
+              {{ evaluatingStudent.student.first_name }}
+              {{ evaluatingStudent.student.last_name }}
+            </h1>
+            <h3>{{ evaluatingStudent.subject_name }}</h3>
+          </div>
+          <button id="include" @click="includeEvalOpen">
+            <p>inkludera tidigare utverderingar</p>
+          </button>
         </div>
-        <button id="include" @click="includeEval">
-          <p>inkludera tidigare utverderingar</p>
-        </button>
-      </div>
-      <textarea name="" id="" cols="150" rows="30" v-model="evaluationText"></textarea>
-      <br />
-      <div class="button-div">
-        <button @click="saveEvaluationModal">Save</button>
-        <button @click="closeEvaluationModal">cancel</button>
-      </div>
-      <div id="evalWarning" v-if="this.evalWarning">
-        <h2>Kan inte skicka tom utvärdering</h2>
+        <textarea
+          name=""
+          id=""
+          cols="150"
+          rows="30"
+          v-model="evaluationText"
+        ></textarea>
+        <br />
+        <div class="button-div">
+          <button @click="saveEvaluationModal">Save</button>
+          <button @click="closeEvaluationModal">cancel</button>
+        </div>
+        <div id="evalWarning" v-if="this.evalWarning">
+          <h2>Kan inte skicka tom utvärdering</h2>
+        </div>
       </div>
     </div>
+    <includeEval v-if="includeEvalModal" @close="includeEvalClose" />
   </div>
 </template>
 
 <script>
-import {mapGetters, mapActions} from 'vuex'
+import { mapGetters, mapActions } from "vuex";
+import includeEval from "./includeEvaluations.vue";
 export default {
-    data(){
-        return {
-            evaluationText:'',
-            evalWarning: false,
-        }
+  components: {includeEval},
+  data() {
+    return {
+      evaluationText: "",
+      evalWarning: false,
+      includeEvalModal: false,
+    };
+  },
+  methods: {
+    ...mapGetters(["getSelectedStudent", "getIncludedEvals", "getUserId"]),
+    ...mapActions(["setEvaluationAction"]),
+    saveEvaluationModal() {
+      if (this.evaluationText === "") {
+        this.evalWarning = true;
+        setTimeout(() => {
+          this.evalWarning = false;
+        }, 3000);
+      } else {
+        this.setEvaluationAction([
+          this.evaluationText,
+          this.getSelectedStudent(),
+          this.getUserId(),
+          this.getIncludedEvals(),
+        ]);
+        this.closeEvaluationModal();
+      }
     },
-    methods:{
-        ...mapGetters(['getSelectedStudent', 'getIncludedEvals', 'getUserId']),
-        ...mapActions(['setEvaluationAction']),
-        saveEvaluationModal(){
-            if(this.evaluationText === ''){
-                this.evalWarning = true
-                setTimeout(()=>{
-                  this.evalWarning = false
-                }, 3000)
-            }else{
-                this.setEvaluationAction([this.evaluationText, this.getSelectedStudent(), this.getUserId(), this.getIncludedEvals()])
-            }
-        },
-        closeEvaluationModal(){
-            this.$emit('close')
-        }
+    closeEvaluationModal() {
+      this.$emit("close");
     },
-    computed:{
-        evaluatingStudent(){
-            return this.getSelectedStudent()
-        },
-        subject(){
-          console.log(this.getSelectedStudent());
-            return true
-        }
+    includeEvalOpen() {
+      console.log("open");
+      this.includeEvalModal = true;
     },
-}
+    includeEvalClose() {
+      this.includeEvalModal = false;
+    },
+  },
+  computed: {
+    evaluatingStudent() {
+      return this.getSelectedStudent();
+    },
+    subject() {
+      console.log(this.getSelectedStudent());
+      return true;
+    },
+  },
+};
 </script>
 
 <style scoped>
-.evaluation-box{
+.evaluation-box {
   background-color: white;
 }
-.studentText{
+.studentText {
   width: 90%;
   margin: auto;
   display: flex;
   justify-content: space-between;
 }
-#include{
+#include {
   height: 80%;
   align-self: center;
 }
-textarea{
+textarea {
+  height: 40vh;
+  width: 70vw;
+  font-size: 1.5rem;
   resize: none;
 }
-.button-div{
+.button-div {
   height: 4vh;
   width: 80%;
   margin: auto;
@@ -91,16 +117,13 @@ textarea{
   justify-content: space-evenly;
   align-items: center;
 }
-#evalWarning{
+#evalWarning {
   position: absolute;
   top: 50vh;
   left: 50%;
   transform: translateX(-50%);
   color: red;
-  text-shadow: 
-    -1px -1px 0 #000,  
-     1px -1px 0 #000,
-    -1px 1px 0 #000,
-     1px 1px 0 #000;
+  text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000,
+    1px 1px 0 #000;
 }
 </style>

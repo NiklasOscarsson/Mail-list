@@ -28,12 +28,18 @@ function sorter(info) {
     info.myStudents=[]
     info.connector.forEach(e => {
         let checkDouble = info.myStudents.filter(i => i.id === e.student_id)
-        if(checkDouble.length !== 0) return //<--------- GET ALL EVALS
+        if(checkDouble.length !== 0){
+            let newEval = info.rawEvaluations.filter(j => e.evaluation_id === j.id)[0]
+            info.myStudents.find(j => j.id === e.student_id).evaluations.push(newEval)
+            checkDouble
+            return
+        }
         let myStudent = info.allStudents.filter(j => e.student_id === j.id)[0]
         myStudent = cutConnections(myStudent)
         myStudent.evaluations = info.rawEvaluations.filter(j => e.evaluation_id===j.id)
         info.myStudents.push(myStudent)
     })
+    // console.log(info.myStudents);
 
     //BUILD ADDED STUDENTS
     let addedStudents = info.studentSubjects.filter(e => e.teacher_id === info.user.teacher_id)

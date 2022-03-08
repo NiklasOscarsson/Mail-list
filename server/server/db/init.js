@@ -1,7 +1,7 @@
 const {client} = require('./postgres')
 const {setup} = require('./setup')
 const {getAllInfo, getUser, getAllStudents} = require('./querys')
-const {saveEval} = require('./post')
+const {saveEval, updateEval} = require('./post')
 
 module.exports = {
     client, 
@@ -10,4 +10,5 @@ module.exports = {
     getUser, 
     saveEval, 
     getAllStudents,
+    updateEval,
 }

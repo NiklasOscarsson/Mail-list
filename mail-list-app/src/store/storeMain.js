@@ -25,7 +25,8 @@ const store = createStore({
             state.allStudents = payload.allStudents
             state.allSubjects = payload.allSubjects
             state.allTeachers = payload.allTeachers
-
+            state.todo = []
+            state.done = []
             state.addedStudents.forEach(e => {
                 let check = e.evaluations.filter(i => i.active === 1)
                 if(check.length > 0){state.done.push(e)}
@@ -56,6 +57,20 @@ const store = createStore({
         async setEvaluationAction(context, payload){
             if(payload.length === 0) return
             await fetch('http://127.0.0.1:80/evaluate',{  //<-----------------Byt Vid Publicering
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'content-type':'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                context.dispatch('setup')
+            })
+        },
+        async updateEvaluationAction(context, payload){
+            if(payload.length === 0) return
+            await fetch('http://127.0.0.1:80/updateEvaluation',{  //<-----------------Byt Vid Publicering
                 method: 'POST',
                 mode: 'cors',
                 headers: {
