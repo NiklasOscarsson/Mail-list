@@ -102,8 +102,13 @@ export default {
       return this.activeEvaluation.evaluation.trim();
     },
     evaluation(){
-      console.log(this.getSelectedStudent().evaluations.find(e=>e.week===date.getWeek()));
-      return this.getSelectedStudent()
+      let studenteval = this.getSelectedStudent().evaluations
+      for(let i=0; i<studenteval.length; i++){
+        if(studenteval[i][0].week === this.getWeek()){
+          return studenteval[i][0].evaluation
+        }
+      }
+      return ''
     }
   },
 };

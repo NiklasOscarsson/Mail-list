@@ -22,7 +22,7 @@ export default {
     };
   },
   methods: {
-    ...mapGetters(["getSelectedStudent", 'getSelectedEvals']),
+    ...mapGetters(["getSelectedStudent", 'getSelectedEvals', 'getWeek']),
     ...mapActions(["setIncludedEvals"]),
 
     closeIncludeModal() {
@@ -33,6 +33,15 @@ export default {
   computed:{
     evaluations(){
       return this.getSelectedEvals()
+    },
+    sortEvaluation(){
+      let studenteval = this.getSelectedStudent().evaluations
+      for(let i=0; i<studenteval.length; i++){
+        if(studenteval[i][0].week === this.getWeek()){
+          return studenteval[i][0].evaluation
+        }
+      }
+      return ''
     }
   }
 };

@@ -94,7 +94,9 @@ const store = createStore({
             return state.selectedStudent
         },
         getSelectedEvals(state){
-            return state.selectedStudent.evaluations
+            let evals
+            state.selectedStudent.evaluations
+            return evals
         },
         getTodoStudents(state){
             return state.todo
