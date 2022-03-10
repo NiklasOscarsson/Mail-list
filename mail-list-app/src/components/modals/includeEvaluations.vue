@@ -3,7 +3,11 @@
     <div class="backdrop" @click.self="closeIncludeModal">
       <div class="include-box card">
         <div>
-
+          <ul>
+            <li v-for="evals, index in evaluations" :key="index">
+              <p>{{evals[0].evaluation}}</p>
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -18,7 +22,7 @@ export default {
     };
   },
   methods: {
-    ...mapGetters(["getSelectedStudent"]),
+    ...mapGetters(["getSelectedStudent", 'getSelectedEvals']),
     ...mapActions(["setIncludedEvals"]),
 
     closeIncludeModal() {
@@ -27,7 +31,9 @@ export default {
 
   },
   computed:{
-    
+    evaluations(){
+      return this.getSelectedEvals()
+    }
   }
 };
 </script>

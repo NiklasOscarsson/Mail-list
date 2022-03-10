@@ -27,9 +27,12 @@ const store = createStore({
             state.allTeachers = payload.allTeachers
             state.todo = []
             state.done = []
+
             state.addedStudents.forEach(e => {
-                let check = e.evaluations.filter(i => i.active === 1)
-                if(check.length > 0){state.done.push(e)}
+                let check = e.evaluations.filter(i => i.find(j=>j.active === 1));
+                if(check.length > 0){
+                    state.done.push(e)
+                }
                 else{state.todo.push(e)}
             });
         },
@@ -89,6 +92,9 @@ const store = createStore({
         },
         getSelectedStudent(state){
             return state.selectedStudent
+        },
+        getSelectedEvals(state){
+            return state.selectedStudent.evaluations
         },
         getTodoStudents(state){
             return state.todo

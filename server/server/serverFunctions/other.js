@@ -43,6 +43,7 @@ function sorter(info) {
 
     //BUILD ADDED STUDENTS
     let addedStudents = info.studentSubjects.filter(e => e.teacher_id === info.user.teacher_id)
+    
     addedStudents = cutConnections(addedStudents)
     addedStudents.forEach(e =>{
         e.student = info.allStudents.filter(i => i.id === e.student_id )[0]
@@ -51,9 +52,12 @@ function sorter(info) {
     addedStudents.forEach(e=>{
         delete e.student.subjects
     })
+    addedStudents.forEach(j =>{
+        j.evaluations = []
+    })
     info.connector.forEach(e=>{
         addedStudents.forEach(j =>{
-            j.evaluations = info.rawEvaluations.filter(i => e.student_id === j.student.id && i.id === e.evaluation_id)
+            j.evaluations.push(info.rawEvaluations.filter(i => e.student_id === j.student.id && i.id === e.evaluation_id))
         })
     })
     addedStudents = cutConnections(addedStudents)
