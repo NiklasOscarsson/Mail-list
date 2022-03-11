@@ -93,10 +93,18 @@ const store = createStore({
         getSelectedStudent(state){
             return state.selectedStudent
         },
-        getSelectedEvals(state){
-            let evals
-            state.selectedStudent.evaluations
+        getOldEvals(state){
+            let evals = state.selectedStudent.evaluations.filter(e => e[0].week !== state.date.getWeek());
             return evals
+        },
+        getThisWeekEvaluation(){
+            let studenteval = this.getSelectedStudent().evaluations
+            for(let i=0; i<studenteval.length; i++){
+              if(studenteval[i][0].week === this.getWeek()){
+                return studenteval[i][0].evaluation
+              }
+            }
+            return ''
         },
         getTodoStudents(state){
             return state.todo

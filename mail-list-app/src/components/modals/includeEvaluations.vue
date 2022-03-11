@@ -4,8 +4,8 @@
       <div class="include-box card">
         <div>
           <ul>
-            <li v-for="evals, index in evaluations" :key="index">
-              <p>{{evals[0].evaluation}}</p>
+            <li v-for="evals, index in oldEvaluations" :key="index">
+              <input type="checkbox">{{evals[0].evaluation}}
             </li>
           </ul>
         </div>
@@ -22,7 +22,7 @@ export default {
     };
   },
   methods: {
-    ...mapGetters(["getSelectedStudent", 'getSelectedEvals', 'getWeek']),
+    ...mapGetters(['getThisWeekEvaluation',"getSelectedStudent", 'getOldEvals', 'getWeek']),
     ...mapActions(["setIncludedEvals"]),
 
     closeIncludeModal() {
@@ -31,18 +31,13 @@ export default {
 
   },
   computed:{
-    evaluations(){
-      return this.getSelectedEvals()
+    oldEvaluations(){
+      return this.getOldEvals()
     },
-    sortEvaluation(){
-      let studenteval = this.getSelectedStudent().evaluations
-      for(let i=0; i<studenteval.length; i++){
-        if(studenteval[i][0].week === this.getWeek()){
-          return studenteval[i][0].evaluation
-        }
-      }
-      return ''
+    ThisWeekEvaluation(){
+      return this.getThisWeekEvaluation()
     }
+    
   }
 };
 </script>
@@ -52,5 +47,8 @@ export default {
   background-color: bisque;
   height: 50vh;
   width: 60vw;
+}
+ul{
+  list-style: none;
 }
 </style>
