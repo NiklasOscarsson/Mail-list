@@ -17,7 +17,7 @@ async function saveEval(req, res, next) {
         VALUES($1, $2, 1)
         RETURNING id
     `,[req.body[0], date.getWeek()])
-    .then(r => evalId = console.log(r.rows[0].id))
+    .then(r => evalId = r.rows[0].id)
     await client.query(`
         SELECT id FROM Subjects
         WHERE course_code = $1
@@ -60,4 +60,19 @@ async function updateEval(req, res, next){
     })
 }
 
-module.exports = {saveEval, updateEval}
+async function activateEvaluations(req, res, next){
+    req.body.forEach(async (e)=> {
+        await client.query(`
+            UPDATE evaluations
+            SET active = $1
+            WHERE id = $2
+        `, [e[2], e[1]])
+        .catch(()=>{
+            console.log('the error is: ' + err);
+            return res.status(500).send('Update failed')
+        }) 
+    })
+    res.status(200).send('Upload completed')
+}
+
+module.exports = {saveEval, updateEval, activateEvaluations}

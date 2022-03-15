@@ -1,3 +1,4 @@
+
 <template>
   <div id="my-students" class="card main-divs">
     <h3 class="title">Mina elever</h3>

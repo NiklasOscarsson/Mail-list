@@ -48,20 +48,22 @@
       <br />
       <div class="input-grid">
         <label for="fName">Namn elev: </label>
+        <br>
         <input
           type="text"
           name="student_fName"
           placeholder="Elevens förnamn"
           v-model="newStudent.studentFirstName"
         />
-        <br />
         <input
           type="text"
           name="student_lName"
           placeholder="Elevens efternamn"
           v-model="newStudent.studentLastName"
         />
-        <label for="VHfName">E-post elev: </label>
+        <br>
+        <label for="student_email">E-post elev: </label>
+        <br>
         <input
           type="text"
           name="student_email"
@@ -69,24 +71,43 @@
           placeholder="Elevens e-post"
           v-model="newStudent.studentEmail"
         />
+        <label for="klass">klass: </label>
+        <select name="klass" id="" v-model="newStudent.class">
+            <optgroup label="EE">
+              <option value="EE19">EE19</option>
+              <option value="EE20">EE20</option>
+              <option value="EE21">EE21</option>
+            </optgroup>
+            <optgroup label="ES">
+              <option value="ES19">ES19</option>
+              <option value="ES20">ES20</option>
+              <option value="ES21">ES21</option>
+            </optgroup>
+            <optgroup label="TE">
+              <option value="TE19">TE19</option>
+              <option value="TE20">TE20</option>
+              <option value="TE21">TE21</option>
+            </optgroup>
+          </select>
       </div>
-      <br />
       <div class="input-grid">
         <label for="VHfName">Namn VH: </label>
+        <br>
         <input
           type="text"
           name="VHfName"
           placeholder="Vårdnadshavarens förnamn"
           v-model="newStudent.guardianFirstName"
         />
-        <br />
         <input
           type="text"
           name="VHlName"
           placeholder="Vårdnadshavarens efternamn"
           v-model="newStudent.guardianLastName"
         />
+        <br>
         <label for="VHfName">E-post VH: </label>
+        <br>
         <input
           type="text"
           name="VH_email"
@@ -122,9 +143,11 @@
       <br />
       <div class="select">
         <button @click="addSubject">
+          <i class="fas fa-plus green"></i> Lägg till vårdnadshavare
+        </button>
+        <button @click="viewSubject">
           <i class="fas fa-plus green"></i> Lägg till ämne
         </button>
-        <button @click="viewSubject">Visa elevens ämnen</button>
       </div>
       <br />
       <div class="save-button"><button>Spara</button></div>
@@ -138,17 +161,29 @@ export default {
     return {
       choosenClass: "",
       choosenStudent: "",
-      newStudent: "",
+      newStudent: {
+        class: '',
+        firstName: '',
+        lastName:'',
+        email: '',
+      },
       student: '',
+      subjects: [],
     };
   },
   methods: {
     addSubject() {
-      this.addSubjectModal = true;
+      this.addVHModal = true;
     },
     viewSubject() {
-      this.viewSubjectModal = true;
+      this.addSubjectModal = true;
     },
   },
 };
 </script>
+
+<style scoped>
+  i{
+    color: green;
+  }
+</style>

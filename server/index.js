@@ -2,7 +2,7 @@ const exp = require('express');
 const cors = require('cors')
 const cookie = require('cookie-parser')
 const Mail = require('./server/mailer/mail');
-const {client, setup, saveEval, updateEval} = require('./server/db/init')
+const {client, setup, saveEval, updateEval, activateEvaluations} = require('./server/db/init')
 const {verifyToken, loginAuth, updateCookie, verifyUser, getAll} = require('./server/serverFunctions/init')
 require('dotenv').config();
 require('./server/serverFunctions/week')
@@ -84,7 +84,7 @@ app.post('/getInfo', /* verifyToken ,*/ getAll)
 //app.post('/profile/login', loginAuth)
 
 //app.post('/userInfo', verifyToken, verifyUser)
-
+app.post('/activateEvaluations', /* verifyToken, */ activateEvaluations)
 app.post('/evaluate', /* verifyToken, */ saveEval)
 app.post('/updateEvaluation', /* verifyToken, */ updateEval)
 

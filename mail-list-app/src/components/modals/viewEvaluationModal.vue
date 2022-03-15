@@ -46,9 +46,6 @@ export default {
       includeEvalModal: false,
       evaluationText: "",
       evalWarning: false,
-      /* evaluation: this.getSelectedStudent()
-        .evaluations.find((e) => e.week === this.getWeek())
-        .evaluation.trim(), */
     };
   },
   methods: {
@@ -78,7 +75,6 @@ export default {
       this.$emit("close");
     },
     includeEvalOpen() {
-      console.log(this.includeEvalModal);
       this.includeEvalModal = true;
     },
     includeEvalClose() {
@@ -93,7 +89,6 @@ export default {
       return true;
     },
     activeEvaluation() {
-      console.log(this.getSelectedStudent());
       return this.getSelectedStudent().evaluations.find(
         (e) => e.week === this.getWeek()
       );

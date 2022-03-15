@@ -31,7 +31,7 @@
         </div>
       </div>
     </div>
-    <includeEval v-if="includeEvalModal" @close="includeEvalClose" />
+    <includeEval v-if="includeEvalModal" :key="evalKey" @close="includeEvalClose" />
   </div>
 </template>
 
@@ -42,6 +42,7 @@ export default {
   components: {includeEval},
   data() {
     return {
+      evalKey: 0,
       evaluationText: "",
       evalWarning: false,
       includeEvalModal: false,
@@ -70,7 +71,7 @@ export default {
       this.$emit("close");
     },
     includeEvalOpen() {
-      console.log("open");
+      this.evalKey++
       this.includeEvalModal = true;
     },
     includeEvalClose() {
@@ -82,7 +83,6 @@ export default {
       return this.getSelectedStudent();
     },
     subject() {
-      console.log(this.getSelectedStudent());
       return true;
     },
   },

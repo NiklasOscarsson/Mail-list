@@ -3,6 +3,8 @@ import App from './App.vue'
 import store from './store/storeMain.js'
 import {getWeek} from './assets/js/week'
 
+
+
 getWeek()
 //const date = new Date();
 

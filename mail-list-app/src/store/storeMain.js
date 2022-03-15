@@ -29,7 +29,9 @@ const store = createStore({
             state.done = []
 
             state.addedStudents.forEach(e => {
-                let check = e.evaluations.filter(i => i.find(j=>j.active === 1));
+                console.log(e.evaluations);
+                let check = e.evaluations.filter(i => i.find(j=>j.active === 1 && j.week === state.date.getWeek()));
+                console.log(check);
                 if(check.length > 0){
                     state.done.push(e)
                 }
@@ -85,6 +87,19 @@ const store = createStore({
                 context.dispatch('setup')
             })
         },
+        async setIncludedEvals(context, payload){
+            fetch('http://127.0.0.1:80/activateEvaluations',{
+                method: 'POST',
+                mode: 'cors',
+                headers: {
+                    'content-type':'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(() => {
+                context.dispatch('setup')
+            })
+        }
     },
     getters: {
         getMyStudents(state){
@@ -94,8 +109,7 @@ const store = createStore({
             return state.selectedStudent
         },
         getOldEvals(state){
-            let evals = state.selectedStudent.evaluations.filter(e => e[0].week !== state.date.getWeek());
-            return evals
+            return  state.selectedStudent.evaluations.filter(e => e[0].week !== state.date.getWeek());
         },
         getThisWeekEvaluation(){
             let studenteval = this.getSelectedStudent().evaluations
