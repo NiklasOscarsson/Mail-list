@@ -1,11 +1,11 @@
 <template>
   <div class="main">
     
-    <allMyStudents />
-    <to-do-students />
-    <done-students />
-    <new-student />
-    <button style="width: 20vw;" @click="test">test</button>
+    <allMyStudents class="all" />
+    <to-do-students class="todo"/>
+    <done-students class="done"/>
+    <new-student class="new"/>
+<!--     <button style="width: 20vw;" @click="test">test</button> -->
   </div>
 </template>
 
@@ -56,17 +56,28 @@ export default {
 
 /* Main */
 .main{
-    margin: 3vh 3% 0 3%;
+    margin-top: 3vh;
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
+    grid-template-rows: auto;
+    grid-template-areas: 
+        "tl tr"
+        "bl br"
+    ;
+    max-height: 100vh;
+    max-width: 100vw;
+    justify-items: center;
 }
 .main-divs{ 
-    width: 40vw;
-    min-height: 40vh;
-    margin-bottom: 5%;
-    min-width: 420px;
+    height: 45vh;
+    width: 45vw;
+    overflow-x: hidden;
+    margin-bottom: 3vh;
 }
+.all{grid-area: tl;}
+.todo{grid-area: tr;}
+.done{grid-area: br;}
+.new{grid-area: bl;}
 .title{
     text-align: center;
     padding-top: 1rem;
@@ -92,5 +103,30 @@ export default {
 h4{ 
     margin-top: .5rem;
     margin-bottom: .5rem;
+}
+@media screen and (max-width: 950px) {
+    .main{
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+        grid-template-areas: 
+            'a'
+            'b'
+            'c'
+            'd'
+        ;
+        max-height: 100vh;
+    }
+    .main-divs{ 
+        height: 45vh;
+        max-height: 60vh;
+        width: 95vw;
+        overflow-x: hidden;
+        margin-bottom: 3vh;
+    }
+    .all{grid-area: a;}
+    .todo{grid-area: b;}
+    .done{grid-area: c;}
+    .new{grid-area: d;}
 }
 </style>

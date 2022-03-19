@@ -15,6 +15,7 @@ const store = createStore({
             includedEvals: [],
             user: {},
             date: new Date,
+            newStudentSubjects:[]
         }
     },
     mutations:{
@@ -29,9 +30,7 @@ const store = createStore({
             state.done = []
 
             state.addedStudents.forEach(e => {
-                console.log(e.evaluations);
                 let check = e.evaluations.filter(i => i.find(j=>j.active === 1 && j.week === state.date.getWeek()));
-                console.log(check);
                 if(check.length > 0){
                     state.done.push(e)
                 }
@@ -109,7 +108,7 @@ const store = createStore({
             return state.selectedStudent
         },
         getOldEvals(state){
-            return  state.selectedStudent.evaluations.filter(e => e[0].week !== state.date.getWeek());
+            return  state.selectedStudent.evaluations.filter(e => e[0].week !== state.date.getWeek()); // DETTA FUNGERAR EJ
         },
         getThisWeekEvaluation(){
             let studenteval = this.getSelectedStudent().evaluations
@@ -134,6 +133,15 @@ const store = createStore({
         },
         getWeek(state){
             return state.date.getWeek()
+        },
+        getStudentsByClass : (state) => (klass) =>{
+            return state.allStudents.filter(e => e.class.trim() === klass)
+        },
+        getAllSubjects(state){
+            return state.allSubjects
+        },
+        getNewStudentSubjects(state){
+            return state.newStudentSubjects
         }
     }
 })

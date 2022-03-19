@@ -2,17 +2,25 @@
   <div>
     <div class="backdrop" @click.self="closeIncludeModal">
       <div class="include-box card">
-        <div>
-          <h3 class="title">{{subject}}</h3>
+        <div class="title">
+            <h3>{{student.first_name}} {{student.last_name}}</h3>
+            <p>{{student.class}}</p>
+            <hr>
+          </div>
+        <div class="subjects">
           <ul>
-            <li v-for="evals, index in oldEvaluations" :key="index">
-              <input type="checkbox" @change="activateEval($event, index, evals[0])" :value="evals[0].id" :checked="checked(evals[0]) ? true:false">{{evals[0].evaluation}}
-            </li>
+            <div class="ämne" v-for="sub in subjects" :key="sub.subject_name">
+              <h2>{{sub.subject_name}}</h2>
+              <div v-for="evals, index in allEvaluations" :key="index">
+                <li v-if="evals.active === 1 && evals.course_code === sub.course_code">
+                  <p> {{evals.evaluation}} </p>
+                </li>
+              </div>
+            </div>
           </ul>
         </div>
         <div class="buttons">
-          <button @click="includeSelected">Save</button>
-          <button @click="closeIncludeModal">Cancel</button>
+          <button @click="closeIncludeModal">Back</button>
         </div>
       </div>
     </div>
@@ -28,7 +36,7 @@ export default {
     };
   },
   methods: {
-    ...mapGetters(['getThisWeekEvaluation',"getSelectedStudent", 'getOldEvals', 'getWeek']),
+    ...mapGetters(['getThisWeekEvaluation',"getSelectedStudent", 'getWeek']),
     ...mapActions(["setIncludedEvals"]),
 
     closeIncludeModal() {
@@ -48,6 +56,7 @@ export default {
         }
       });
       if(!change){this.include.push(toChange)}
+      console.log(evals.active);
       if(evals.active === 1){evals.active = 0}
       else{evals.active = 1}
 
@@ -57,11 +66,14 @@ export default {
     }
   },
   computed:{
-    oldEvaluations(){
-      return this.getOldEvals()
+    student(){
+      return this.getSelectedStudent()
     },
-    ThisWeekEvaluation(){
-      return this.getThisWeekEvaluation()
+    allEvaluations(){
+      return this.getSelectedStudent().evaluations
+    },
+    subjects(){
+      return this.getSelectedStudent().subjects
     },
     subject(){
       return this.getSelectedStudent().course_code
@@ -73,19 +85,28 @@ export default {
 
 <style scoped>
 .include-box {
-  display: flex;
-  flex-direction: column;
   background-color: bisque;
-  min-height: 50vh;
+  min-height: 60vh;
   width: 60vw;
 }
+.title{
+  height: 10vh;
+}
+.subjects{
+  overflow-x: hidden;
+  max-height: 50vh;
+  width: 50%;
+  margin: auto;
+}
 ul{
-  list-style: none;
-  height: 33vh;
+  text-align: start;
+
 }
 .buttons{
+  height: 5vh;
   display: flex;
   justify-content: space-evenly;
-  margin-bottom: 3vh;
+  align-items: center;
+
 }
 </style>

@@ -22,15 +22,31 @@
       <button class="view-active-evals" @click="viewEvaluations">
         Se alla aktiva utvärderingar
       </button>
+      <viewEval v-if="includeEvalModal" @close="includeEvalClose" />
     </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import viewEval from "./viewEvaluations.vue";
 export default {
+  components:{
+    viewEval
+  },
+  data(){
+    return {
+      includeEvalModal: false
+    }
+  },
   methods: {
     ...mapGetters(["getSelectedStudent"]),
+    viewEvaluations(){
+      this.includeEvalModal = true
+    },
+    includeEvalClose(){
+      this.includeEvalModal = false
+    }
   },
   computed: {
     viewSelectedStudent() {

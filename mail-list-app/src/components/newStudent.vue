@@ -31,15 +31,16 @@
             id=""
             v-model="choosenStudent"
             v-if="choosenClass !== ''"
+            @change="setStudent"
           >
             <option value="">Ingen vald</option>
             <optgroup :label="'elever i ' + choosenClass">
               <option
-                v-for="student in schoolClass"
+                v-for="student in studentsByClass"
                 :key="student.student_mail"
                 :value="student"
               >
-                {{ student.first_name + " " + student.last_name }}
+              {{ student.first_name }} {{ student.last_name }}
               </option>
             </optgroup>
           </select>
@@ -53,13 +54,13 @@
           type="text"
           name="student_fName"
           placeholder="Elevens förnamn"
-          v-model="newStudent.studentFirstName"
+          v-model="newStudent.firstName"
         />
         <input
           type="text"
           name="student_lName"
           placeholder="Elevens efternamn"
-          v-model="newStudent.studentLastName"
+          v-model="newStudent.lastName"
         />
         <br>
         <label for="student_email">E-post elev: </label>
@@ -69,7 +70,7 @@
           name="student_email"
           id=""
           placeholder="Elevens e-post"
-          v-model="newStudent.studentEmail"
+          v-model="newStudent.email"
         />
         <label for="klass">klass: </label>
         <select name="klass" id="" v-model="newStudent.class">
@@ -97,13 +98,13 @@
           type="text"
           name="VHfName"
           placeholder="Vårdnadshavarens förnamn"
-          v-model="newStudent.guardianFirstName"
+          v-model="newStudent.guardian1.FirstName"
         />
         <input
           type="text"
           name="VHlName"
           placeholder="Vårdnadshavarens efternamn"
-          v-model="newStudent.guardianLastName"
+          v-model="newStudent.guardian1.LastName"
         />
         <br>
         <label for="VHfName">E-post VH: </label>
@@ -113,49 +114,49 @@
           name="VH_email"
           id=""
           placeholder="Vårdnadshavarens e-post"
-          v-model="newStudent.guardianEmail"
+          v-model="newStudent.guardian1.Email"
         />
       </div>
-      <div class="input-grid" v-if="student.guardian2_first_name">
-        <label for="VHfName">Namn VH: </label>
+      <div class="input-grid">
+        <label for="VHfName">Namn VH 2: </label>
+        <br>
         <input
           type="text"
           name="VHfName"
           placeholder="Vårdnadshavarens förnamn"
-          v-model="newStudent.guardianFirstName"
+          v-model="newStudent.guardian2.FirstName"
         />
-        <br />
         <input
           type="text"
           name="VHlName"
           placeholder="Vårdnadshavarens efternamn"
-          v-model="newStudent.guardianLastName"
+          v-model="newStudent.guardian2.LastName"
         />
+        <br>
         <label for="VHfName">E-post VH: </label>
+        <br>
         <input
           type="text"
           name="VH_email"
           id=""
           placeholder="Vårdnadshavarens e-post"
-          v-model="newStudent.guardianEmail"
+          v-model="newStudent.guardian2.Email"
         />
       </div>
       <br />
       <div class="select">
-        <button @click="addSubject">
-          <i class="fas fa-plus green"></i> Lägg till vårdnadshavare
-        </button>
-        <button @click="viewSubject">
-          <i class="fas fa-plus green"></i> Lägg till ämne
+        <button @click.prevent="viewSubject">
+          <i class="fas fa-plus green"></i> Lägg till ämnen
         </button>
       </div>
       <br />
-      <div class="save-button"><button>Spara</button></div>
+      <div class="save-button"><button>{{spara}}</button></div>
     </form>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -166,24 +167,64 @@ export default {
         firstName: '',
         lastName:'',
         email: '',
+        guardian1: {
+          FirstName: '',
+          LastName: '',
+          Email: '',
+        },
+        guardian2: {
+          FirstName: '',
+          LastName: '',
+          Email: '',
+        },
+        Subjects: this.setSubjects,
       },
-      student: '',
-      subjects: [],
     };
   },
   methods: {
+    ...mapGetters(['getStudentsByClass', 'getNewStudentSubjects']),
     addSubject() {
       this.addVHModal = true;
     },
     viewSubject() {
       this.addSubjectModal = true;
     },
+    setStudent(){
+      this.newStudent.class = this.choosenStudent.class.trim()
+      this.newStudent.firstName = this.choosenStudent.first_name.trim()
+      this.newStudent.lastName = this.choosenStudent.last_name.trim()
+      this.newStudent.email = this.choosenStudent.student_mail.trim()
+      this.newStudent.guardian1.FirstName = this.choosenStudent.guardians[0].firstName.trim()
+      this.newStudent.guardian1.LastName = this.choosenStudent.guardians[0].lastName.trim()
+      this.newStudent.guardian1.Email = this.choosenStudent.guardians[0].mail.trim()
+      this.newStudent.guardian2.FirstName = this.choosenStudent.guardians[1].firstName.trim()
+      this.newStudent.guardian2.LastName = this.choosenStudent.guardians[1].lastName.trim()
+      this.newStudent.guardian2.Email = this.choosenStudent.guardians[1].mail.trim()
+    }
   },
+  computed:{
+    studentsByClass(){
+      return this.getStudentsByClass()(this.choosenClass)
+    },
+    spara(){
+      if(this.choosenStudent !== '') return 'Spara'
+      else return 'Skapa'
+    },
+    setSubjects(){
+      return this.getNewStudentSubjects()
+    }
+  }
 };
 </script>
 
 <style scoped>
+  .input-grid{
+    margin-bottom: 2vh;
+  }
   i{
     color: green;
+  }
+  .save-button{
+    text-align: center;
   }
 </style>

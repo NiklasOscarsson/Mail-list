@@ -17,7 +17,7 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-// setup()
+setup()
 
 
 //GET

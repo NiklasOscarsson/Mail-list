@@ -19,7 +19,7 @@
           id=""
           cols=""
           rows=""
-          v-model="evaluation"
+          v-model="evaluationText"
           maxlength="500"
         ></textarea>
         <br />
@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       includeEvalModal: false,
-      evaluationText: "",
+      evaluationText: this.evaluation(),
       evalWarning: false,
     };
   },
@@ -62,13 +62,16 @@ export default {
         setTimeout(() => {
           this.evalWarning = false;
         }, 3000);
-      } else {
+      }
+      else if(this.evaluationText === this.evaluation()){this.closeEvaluationModal()} 
+      else {
         this.updateEvaluationAction([
-          this.evaluation,
+          this.evaluationText,
           this.getSelectedStudent(),
-          this.activeEvaluation.id,
+          this.activeEvaluation[0].id,
           this.getIncludedEvals(),
         ]);
+        this.closeEvaluationModal()
       }
     },
     closeEvaluationModal() {
@@ -80,6 +83,9 @@ export default {
     includeEvalClose() {
       this.includeEvalModal = false;
     },
+    evaluation(){
+       return this.getSelectedStudent().evaluations.find((e) => e[0].week === this.getWeek())[0].evaluation.trim();
+    }
   },
   computed: {
     evaluatingStudent() {
@@ -89,22 +95,11 @@ export default {
       return true;
     },
     activeEvaluation() {
-      return this.getSelectedStudent().evaluations.find(
-        (e) => e.week === this.getWeek()
-      );
+      return this.getSelectedStudent().evaluations.find((e) => e[0].week === this.getWeek());
     },
     onlyEvaluation() {
       return this.activeEvaluation.evaluation.trim();
     },
-    evaluation(){
-      let studenteval = this.getSelectedStudent().evaluations
-      for(let i=0; i<studenteval.length; i++){
-        if(studenteval[i][0].week === this.getWeek()){
-          return studenteval[i][0].evaluation
-        }
-      }
-      return ''
-    }
   },
 };
 </script>
