@@ -1,5 +1,5 @@
 const sgMail = require('@sendgrid/mail');
-const {client} = require('../db/postgres')
+const {client} = require('../db/init')
 const {reminder, mail_list} = require('./reminder')
 const {sortHtmlTags} = require('./mailsorter')
 const cron = require('node-cron')

@@ -4,6 +4,9 @@ const cookie = require('cookie-parser')
 const Mail = require('./server/mailer/mail');
 const {client, setup, saveEval, updateEval, activateEvaluations} = require('./server/db/init')
 const {verifyToken, loginAuth, updateCookie, verifyUser, getAll} = require('./server/serverFunctions/init')
+const cron = require('node-cron')
+const request = require('request')
+
 require('dotenv').config();
 require('./server/serverFunctions/week')
 const app = exp();
@@ -17,8 +20,16 @@ app.use(exp.urlencoded({extended:true}));
 app.use(exp.static('resources'));
 app.use(exp.json())
 
-setup()
 
+//setup()
+/* cron.schedule('0 2 * * 1', ()=>{
+  request('https://api.myip.com', (err, res, body)=>{
+    const myIP = JSON.parse(body);
+    request(`https://www.duckdns.org/update/nti-karlstad/3a13e492-6b0f-4e16-b6ff-5b3e05552c67/${myIP.ip}`, (err, res, body)=>{
+      console.log(body);
+    })
+  })
+}) */
 
 //GET
 

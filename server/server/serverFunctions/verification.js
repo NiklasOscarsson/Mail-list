@@ -1,5 +1,5 @@
 const JWT = require('jsonwebtoken')
-const {client} = require('../db/postgres')
+const {client} = require('../db/init')
 
 
 //verify token

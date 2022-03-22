@@ -15,7 +15,7 @@ const store = createStore({
             includedEvals: [],
             user: {},
             date: new Date,
-            newStudentSubjects:[]
+            newStudentSubjects:['mom']
         }
     },
     mutations:{
@@ -40,6 +40,9 @@ const store = createStore({
         setSelectedStudent(state, payload){
             state.selectedStudent = payload
         },
+        setNewStudentSubjects(state, payload){
+            state.newStudentSubjects = payload
+        },
     },
     actions: {
         setup(context){
@@ -57,6 +60,10 @@ const store = createStore({
         },
         setSelectedStudentAction(context, payload){
             context.commit('setSelectedStudent', payload)
+        },
+        setNewStudentSubjects(context, payload){
+            console.log(payload);
+            context('setNewStudentSubjects')
         },
         async setEvaluationAction(context, payload){
             if(payload.length === 0) return
@@ -98,6 +105,9 @@ const store = createStore({
             .then(() => {
                 context.dispatch('setup')
             })
+        },
+        async createStudent(context, payload){
+            console.log(payload);
         }
     },
     getters: {

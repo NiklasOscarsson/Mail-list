@@ -84,7 +84,7 @@ export default {
       this.includeEvalModal = false;
     },
     evaluation(){
-       return this.getSelectedStudent().evaluations.find((e) => e[0].week === this.getWeek())[0].evaluation.trim();
+      return this.getSelectedStudent().evaluations.find((e) => e[0].week === this.getWeek())[0].evaluation.trim();
     }
   },
   computed: {

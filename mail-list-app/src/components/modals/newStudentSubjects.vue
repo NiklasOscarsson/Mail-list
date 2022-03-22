@@ -4,9 +4,9 @@
       <div class="include-box card">
         <div>
           <h3 class="title">Välj ämnen</h3>
-          <ul>
+          <ul class="lista">
             <li v-for="subject, index in subjects" :key="index">
-              <input type="checkbox"><h3>{{}}</h3>
+              <input type="checkbox" @change="includeSubject($event, subject.teacher_id, subject.course_code)" :checked="checked(subject.course_code) ? true:false"><h3 style="display: inline-block">{{subject.subject_name}}</h3>
             </li>
           </ul>
         </div>
@@ -29,8 +29,27 @@ export default {
   },
   methods: {
     ...mapGetters(['getAllSubjects', 'getNewStudentSubjects']),
+    ...mapActions(['setNewStudentSubjects']),
+    closeModal(){
+      this.$emit("close")
+    },
+    addSelected(){
+      console.log(this.getAllSubjects()[0]);
+      console.log(this.include);
+      //setNewStudentSubjects(include)
+    },
+    includeSubject(e, id, code){
+      this.include.push({courseCode:code, teacerId:id})
+      
+    },
+    checked(code){
+      return this.include.includes(code)
+    }
   },
   computed:{
+    subjects(){
+      return this.getAllSubjects()
+    }
   },
 };
 
@@ -44,9 +63,17 @@ export default {
   min-height: 50vh;
   width: 60vw;
 }
-ul{
+.lista{
+  display: grid;
+  grid-template-columns: 50% 50%;
   list-style: none;
   height: 33vh;
+}
+li{
+  height: fit-content;
+}
+h3{
+  margin: 0;
 }
 .buttons{
   display: flex;
