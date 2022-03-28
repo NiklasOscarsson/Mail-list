@@ -3,7 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "docker": "docker-compose up -d",
+    "server": "sudo node index",
+    "stop": "docker-compose stop",
+    "go": "npm run docker & npm run server"
   },
   "author": "",
   "license": "ISC",
